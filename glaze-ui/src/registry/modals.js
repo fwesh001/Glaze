@@ -31,6 +31,55 @@ export const modalRegistry = [
       }
     ],
     "deprecated": false
+  },
+  {
+    "id": "paper-origami-modal",
+    "name": "Paper Origami Modal",
+    "category": "modal",
+    "description": "A soft paper modal that unfolds from the center like an origami letter.",
+    "directoryPath": "/library/modals/paper-origami-modal",
+    "settingsConfig": [
+      {
+        "id": "title",
+        "label": "Modal Title",
+        "type": "text",
+        "default": "Open document"
+      },
+      {
+        "id": "message",
+        "label": "Modal Message",
+        "type": "text",
+        "default": "This paper fold can reveal any content."
+      },
+      {
+        "id": "tone",
+        "label": "Paper Tone",
+        "type": "select",
+        "options": [
+          "Kraft",
+          "Ivory",
+          "Parchment"
+        ],
+        "default": "Ivory"
+      },
+      {
+        "id": "speed",
+        "label": "Unfold Speed",
+        "type": "slider",
+        "min": 0.35,
+        "max": 2.5,
+        "default": 1
+      },
+      {
+        "id": "shadow",
+        "label": "Shadow Strength",
+        "type": "slider",
+        "min": 4,
+        "max": 26,
+        "default": 14
+      }
+    ],
+    "deprecated": false
   }
 ];
 
