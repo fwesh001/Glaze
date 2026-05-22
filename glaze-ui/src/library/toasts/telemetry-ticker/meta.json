@@ -1,0 +1,11 @@
+{
+  "id": "telemetry-ticker",
+  "name": "Hardware Telemetry Ticker",
+  "category": "toast",
+  "description": "Terminal-like diagnostic ticker with rapid typewriter reveal and binary flicker lock-in.",
+  "settingsConfig": [
+    { "id": "message", "label": "Primary Message", "type": "text", "default": "Diagnostic bus synchronized" },
+    { "id": "lines", "label": "Line Count", "type": "slider", "min": 3, "max": 6, "step": 1, "default": 4 },
+    { "id": "speed", "label": "Ticker Speed", "type": "slider", "min": 0.35, "max": 2.5, "step": 0.05, "default": 1 }
+  ]
+}
