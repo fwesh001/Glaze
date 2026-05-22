@@ -38,11 +38,8 @@ function scrambleCode(source) {
 
 export default function ControlPanel() {
   const [activeTab, setActiveTab] = useState('settings');
-  const [language, setLanguage] = useState('React (JSX)');
-  const [prompt, setPrompt] = useState('');
-  const [displayCode, setDisplayCode] = useState('');
   const [isMorphing, setIsMorphing] = useState(false);
-  const { registryItem, settings, setSetting } = useWorkspace();
+  const { registryItem, settings, setSetting, language, setLanguage, prompt, setPrompt, displayCode, setDisplayCode } = useWorkspace();
   const codePaneRef = useRef(null);
   const morphTimersRef = useRef([]);
 
