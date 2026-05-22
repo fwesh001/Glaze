@@ -1,0 +1,13 @@
+{
+  "id": "paper-receipt-toast",
+  "name": "Paper Receipt Toast",
+  "category": "toast",
+  "description": "A warm receipt-style toast that slides into view like a paper slip from a cash register.",
+  "directoryPath": "/library/toasts/paper-receipt-toast",
+  "settingsConfig": [
+    { "id": "message", "label": "Toast Message", "type": "text", "default": "Payment received" },
+    { "id": "tone", "label": "Paper Tone", "type": "select", "options": ["Kraft", "Ivory", "Parchment"], "default": "Kraft" },
+    { "id": "speed", "label": "Slide Speed", "type": "slider", "min": 0.35, "max": 2.5, "default": 1 },
+    { "id": "depth", "label": "Shadow Depth", "type": "slider", "min": 4, "max": 28, "default": 14 }
+  ]
+}
