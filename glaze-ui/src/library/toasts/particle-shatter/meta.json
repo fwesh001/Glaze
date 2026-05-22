@@ -1,0 +1,10 @@
+{
+  "id": "particle-shatter",
+  "name": "Particle Deconstruction Alert",
+  "category": "toast",
+  "description": "Glass alert shell that vaporizes into 24 scattering vector particles on dismiss.",
+  "settingsConfig": [
+    { "id": "message", "label": "Toast Message", "type": "text", "default": "Container integrity compromised" },
+    { "id": "speed", "label": "Shatter Speed", "type": "slider", "min": 0.35, "max": 2.5, "step": 0.05, "default": 1 }
+  ]
+}
