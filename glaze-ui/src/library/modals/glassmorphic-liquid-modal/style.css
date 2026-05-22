@@ -1,0 +1,187 @@
+.glassmorphic-liquid-modal-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.glassmorphic-liquid-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.glassmorphic-liquid-modal-center {
+  position: relative;
+  z-index: 51;
+}
+
+.glassmorphic-liquid-modal {
+  position: relative;
+  width: 90vw;
+  max-width: 420px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(var(--modal-blur, 16px));
+  padding: 0;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -20px 40px rgba(0, 0, 0, 0.3),
+    0 25px 60px rgba(0, 0, 0, 0.4);
+  animation: modal-glow 3s ease-in-out infinite;
+}
+
+@keyframes modal-glow {
+  0% {
+    filter: drop-shadow(0 0 0 rgba(52, 211, 255, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(52, 211, 255, 0.1));
+  }
+  100% {
+    filter: drop-shadow(0 0 0 rgba(52, 211, 255, 0));
+  }
+}
+
+/* Gradient rim effect */
+.glassmorphic-liquid-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(52, 211, 255, 0.3),
+    rgba(60, 255, 143, 0.2),
+    rgba(255, 77, 109, 0.15)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Gloss overlay */
+.glassmorphic-liquid-modal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: radial-gradient(
+    circle at 20% 30%,
+    rgba(255, 255, 255, 0.15),
+    transparent 35%
+  );
+  pointer-events: none;
+}
+
+.glassmorphic-liquid-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 52;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition:
+    all 0.2s ease;
+}
+
+.glassmorphic-liquid-modal-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 20px rgba(52, 211, 255, 0.2);
+}
+
+.glassmorphic-liquid-modal-header {
+  position: relative;
+  height: auto;
+  padding: 1.5rem 1.5rem 1rem;
+}
+
+.glassmorphic-liquid-modal-content {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.glassmorphic-liquid-modal-content h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.glassmorphic-liquid-modal-content p {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.glassmorphic-liquid-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.glassmorphic-liquid-modal-btn {
+  flex: 1;
+  padding: 0.625rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    all 0.2s ease;
+}
+
+.glassmorphic-liquid-modal-btn.cancel {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.glassmorphic-liquid-modal-btn.cancel:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.glassmorphic-liquid-modal-btn.confirm {
+  background: rgba(52, 211, 255, 0.15);
+  color: rgba(52, 211, 255, 0.95);
+  border-color: rgba(52, 211, 255, 0.3);
+}
+
+.glassmorphic-liquid-modal-btn.confirm:hover {
+  background: rgba(52, 211, 255, 0.25);
+  color: rgba(52, 211, 255, 1);
+  border-color: rgba(52, 211, 255, 0.5);
+  box-shadow: 0 0 20px rgba(52, 211, 255, 0.2);
+}
+
+.glassmorphic-liquid-modal-btn:active {
+  transform: scale(0.98);
+}
