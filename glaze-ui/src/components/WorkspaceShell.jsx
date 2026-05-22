@@ -16,11 +16,11 @@ const navItems = [
 export default function WorkspaceShell({ registryItem }) {
   return (
     <WorkspaceProvider registryItem={registryItem}>
-      <main className="min-h-screen bg-black px-5 py-5 text-white">
-        <div className="mx-auto flex max-w-7xl gap-5">
+      <main className="min-h-screen bg-black px-4 py-4 text-white lg:px-5 lg:py-5">
+        <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-[1600px] gap-5 lg:min-h-[calc(100vh-2.5rem)]">
           <Sidebar items={navItems} />
 
-          <div className="flex min-w-0 flex-1 flex-col gap-5">
+          <div className="flex min-w-0 flex-1 flex-col gap-5 pb-1">
             <header className="rounded-[2rem] border border-white/10 bg-white/[0.03] px-6 py-5 shadow-glass backdrop-blur-xl">
               <div className="flex items-center justify-between gap-4">
                 <div>
