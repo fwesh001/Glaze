@@ -13,6 +13,10 @@ import GlassmorphicLiquidLoader from '../library/loaders/glassmorphic-liquid-loa
 import PaperFoldLoader from '../library/loaders/paper-fold-loader/index.jsx';
 import BinaryStreamLoader from '../library/loaders/binary-stream/index.jsx';
 import BezierWaveLoader from '../library/loaders/bezier-wave/index.jsx';
+import QuantumGridLoader from '../library/loaders/quantum-grid/index.jsx';
+import FibonacciSpiralLoader from '../library/loaders/fibonacci-spiral/index.jsx';
+import MemoryBlocksLoader from '../library/loaders/memory-blocks/index.jsx';
+import MercurySpillLoader from '../library/loaders/mercury-spill/index.jsx';
 import { useWorkspace } from './WorkspaceProvider.jsx';
 
 export default function MercuryChamber() {
@@ -184,6 +188,22 @@ export default function MercuryChamber() {
             ) : registryItem?.id === 'bezier-wave' ? (
               <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
                 <BezierWaveLoader />
+                          ) : registryItem?.id === 'quantum-grid' ? (
+                            <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+                              <QuantumGridLoader />
+                            </div>
+                          ) : registryItem?.id === 'fibonacci-spiral' ? (
+                            <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+                              <FibonacciSpiralLoader />
+                                        ) : registryItem?.id === 'memory-blocks' ? (
+                                          <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+                                            <MemoryBlocksLoader />
+                                          </div>
+                                        ) : registryItem?.id === 'mercury-spill' ? (
+                                          <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+                                            <MercurySpillLoader />
+                                          </div>
+                            </div>
               </div>
             ) : (
               <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
