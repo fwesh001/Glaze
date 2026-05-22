@@ -49,7 +49,15 @@ function getStatusIcon(glow) {
   return <CheckCircle2 size={16} />;
 }
 
-export default function LiquidToast({ stackIndex = 0 }) {
+export default function LiquidToast({
+  stackIndex = 0,
+  positionClass = 'relative',
+  className = '',
+  style = {},
+  trajectory = { x: 180 + stackIndex * 12, y: 18 + stackIndex * 6 },
+  entranceDelay = 0,
+  physicsScale = 1,
+}) {
   const toastRef = useRef(null);
   const glossRef = useRef(null);
   const { settings, animationTick } = useWorkspace();
@@ -65,8 +73,8 @@ export default function LiquidToast({ stackIndex = 0 }) {
       return undefined;
     }
 
-    const entryX = 180 + stackIndex * 12;
-    const entryY = 18 + stackIndex * 6;
+    const entryX = trajectory.x;
+    const entryY = trajectory.y;
     const distortedRadius = '30% 70% 70% 30% / 50% 30% 70% 50%';
 
     const timeline = gsap.timeline({ defaults: { ease: animationEase } });
@@ -76,8 +84,8 @@ export default function LiquidToast({ stackIndex = 0 }) {
         opacity: 0,
         x: entryX,
         y: entryY,
-        scaleX: 0.88,
-        scaleY: 1.12,
+        scaleX: 0.88 * physicsScale,
+        scaleY: 1.12 / physicsScale,
         borderRadius: distortedRadius,
       })
       .set(gloss, { opacity: 0.15, scale: 0.92 })
@@ -89,26 +97,32 @@ export default function LiquidToast({ stackIndex = 0 }) {
         scaleY: 1,
         borderRadius: '50px',
         duration: 0.95,
+        delay: entranceDelay,
       })
-      .to(gloss, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.7,
-      }, '<0.15');
+      .to(
+        gloss,
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.7,
+        },
+        '<0.15',
+      );
 
     return () => timeline.kill();
-  }, [animationEase, animationTick, stackIndex, settings.blur, settings.glow, settings.message, settings.viscosity]);
+  }, [animationEase, animationTick, entranceDelay, physicsScale, stackIndex, trajectory.x, trajectory.y, settings.blur, settings.glow, settings.message, settings.viscosity]);
 
   return (
     <div
       ref={toastRef}
-      className="liquid-toast liquid-toast-stack relative w-full overflow-hidden px-6 py-5 text-white"
+      className={`liquid-toast liquid-toast-stack ${positionClass} w-full overflow-hidden px-6 py-5 text-white ${className}`}
       style={{
         '--workspace-blur': `${settings.blur ?? 20}px`,
         '--glow-rim': currentGlow.rim,
         '--glow-aura': currentGlow.aura,
         '--glow-accent': currentGlow.accent,
         zIndex: 40 - stackIndex,
+        ...style,
       }}
     >
       <div ref={glossRef} className="liquid-toast-gloss pointer-events-none absolute inset-0" />
