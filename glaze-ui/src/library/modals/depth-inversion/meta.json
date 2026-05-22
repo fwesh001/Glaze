@@ -1,0 +1,11 @@
+{
+  "id": "depth-inversion",
+  "name": "Depth-Inversion Overlay",
+  "category": "modal",
+  "description": "High-contrast glass plate while the global workspace recedes, tilts, and blurs into depth.",
+  "settingsConfig": [
+    { "id": "title", "label": "Modal Title", "type": "text", "default": "Depth Inversion" },
+    { "id": "message", "label": "Body Message", "type": "text", "default": "Foreground plate active. Background context shifted to depth mode." },
+    { "id": "speed", "label": "Depth Speed", "type": "slider", "min": 0.35, "max": 2.5, "step": 0.05, "default": 1 }
+  ]
+}
