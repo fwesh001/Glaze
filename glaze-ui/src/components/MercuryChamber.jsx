@@ -24,6 +24,7 @@ export default function MercuryChamber() {
   const isPaperToast = registryItem?.id === 'paper-receipt-toast';
   const isPaperModal = registryItem?.id === 'paper-origami-modal';
   const isPaperLoader = registryItem?.id === 'paper-fold-loader';
+  const previewKey = `${registryItem?.id ?? 'none'}:${animationTick}`;
 
   const createOverclockNodes = () => {
     const count = Math.floor(gsap.utils.random(30, 50, 1));
@@ -117,59 +118,73 @@ export default function MercuryChamber() {
           ) : null}
         </div>
 
-        <div className="relative flex w-full max-w-2xl flex-col gap-4">
+        <div className="relative flex h-full w-full max-w-2xl flex-col gap-4">
           {registryItem?.category === 'toast' && overclockNodes.length === 0 ? (
             isPaperToast ? (
-              <PaperReceiptToast
-                message={settings?.message ?? 'Payment received'}
-                tone={settings?.tone ?? 'Kraft'}
-                speed={settings?.speed ?? 1}
-                depth={settings?.depth ?? 14}
-              />
+              <div key={previewKey} className="flex h-full items-center justify-center">
+                <PaperReceiptToast
+                  message={settings?.message ?? 'Payment received'}
+                  tone={settings?.tone ?? 'Kraft'}
+                  speed={settings?.speed ?? 1}
+                  depth={settings?.depth ?? 14}
+                />
+              </div>
             ) : (
-              <LiquidToast stackIndex={0} />
+              <div key={previewKey} className="flex h-full items-center justify-center">
+                <LiquidToast stackIndex={0} />
+              </div>
             )
           ) : registryItem?.category === 'modal' ? (
             isPaperModal ? (
-              <PaperOrigamiModal
-                isOpen={true}
-                title={settings?.title ?? 'Open document'}
-                message={settings?.message ?? 'This paper fold can reveal any content.'}
-                tone={settings?.tone ?? 'Ivory'}
-                speed={settings?.speed ?? 1}
-                shadow={settings?.shadow ?? 14}
-              />
+              <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+                <PaperOrigamiModal
+                  isOpen={true}
+                  isEmbedded={true}
+                  title={settings?.title ?? 'Open document'}
+                  message={settings?.message ?? 'This paper fold can reveal any content.'}
+                  tone={settings?.tone ?? 'Ivory'}
+                  speed={settings?.speed ?? 1}
+                  shadow={settings?.shadow ?? 14}
+                />
+              </div>
             ) : (
-              <GlassmorphicLiquidModal
-              isOpen={true}
-              isEmbedded={true}
-              title={settings?.title ?? 'Confirm action'}
-              message={settings?.message ?? 'Are you sure?'}
-              tone={settings?.tone ?? 'Neutral'}
-              onConfirm={() => {
-                /* noop for preview - user can wire actions in workspace */
-              }}
-              onCancel={() => {}}
-              onClose={() => {}}
-              />
+              <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+                <GlassmorphicLiquidModal
+                  isOpen={true}
+                  isEmbedded={true}
+                  title={settings?.title ?? 'Confirm action'}
+                  message={settings?.message ?? 'Are you sure?'}
+                  tone={settings?.tone ?? 'Neutral'}
+                  onConfirm={() => {
+                    /* noop for preview - user can wire actions in workspace */
+                  }}
+                  onCancel={() => {}}
+                  onClose={() => {}}
+                />
+              </div>
             )
           ) : registryItem?.category === 'loader' ? (
             isPaperLoader ? (
-              <PaperFoldLoader
-                isOpen={true}
-                message={settings?.message ?? 'Preparing the paper'}
-                tone={settings?.tone ?? 'Parchment'}
-                speed={settings?.speed ?? 1}
-                thickness={settings?.thickness ?? 4}
-              />
+              <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+                <PaperFoldLoader
+                  isOpen={true}
+                  isEmbedded={true}
+                  message={settings?.message ?? 'Preparing the paper'}
+                  tone={settings?.tone ?? 'Parchment'}
+                  speed={settings?.speed ?? 1}
+                  thickness={settings?.thickness ?? 4}
+                />
+              </div>
             ) : (
-              <GlassmorphicLiquidLoader
-                isOpen={true}
-                isEmbedded={true}
-                message={settings?.message ?? 'Loading your experience'}
-                size={settings?.size ?? 112}
-                speed={settings?.speed ?? 1}
-              />
+              <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+                <GlassmorphicLiquidLoader
+                  isOpen={true}
+                  isEmbedded={true}
+                  message={settings?.message ?? 'Loading your experience'}
+                  size={settings?.size ?? 112}
+                  speed={settings?.speed ?? 1}
+                />
+              </div>
             )
           ) : registryItem ? (
             <div className="rounded-[2rem] border border-white/10 bg-black/40 p-8 text-sm text-zinc-400">
