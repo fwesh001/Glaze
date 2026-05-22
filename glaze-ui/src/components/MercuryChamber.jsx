@@ -9,6 +9,12 @@ import LiquidToast from '../library/toasts/liquid-toast/index.jsx';
 import PaperReceiptToast from '../library/toasts/paper-receipt-toast/index.jsx';
 import GlassmorphicLiquidModal from '../library/modals/glassmorphic-liquid-modal/index.jsx';
 import PaperOrigamiModal from '../library/modals/paper-origami-modal/index.jsx';
+import DecryptionBreachModal from '../library/modals/decryption-breach/index.jsx';
+import ChamberDropModal from '../library/modals/chamber-drop/index.jsx';
+import PrismRevealModal from '../library/modals/prism-reveal/index.jsx';
+import SidebarDockModal from '../library/modals/sidebar-dock/index.jsx';
+import SplitPaneModal from '../library/modals/split-pane/index.jsx';
+import DepthInversionModal from '../library/modals/depth-inversion/index.jsx';
 import GlassmorphicLiquidLoader from '../library/loaders/glassmorphic-liquid-loader/index.jsx';
 import PaperFoldLoader from '../library/loaders/paper-fold-loader/index.jsx';
 import BinaryStreamLoader from '../library/loaders/binary-stream/index.jsx';
@@ -19,6 +25,153 @@ import MemoryBlocksLoader from '../library/loaders/memory-blocks/index.jsx';
 import MercurySpillLoader from '../library/loaders/mercury-spill/index.jsx';
 import { useWorkspace } from './WorkspaceProvider.jsx';
 
+function ModalPreview({ registryItem, settings, previewKey }) {
+  const commonModalProps = {
+    isOpen: true,
+    isEmbedded: true,
+    title: settings?.title ?? 'Confirm action',
+    message: settings?.message ?? 'Proceed with this operation?',
+    speed: settings?.speed ?? 1,
+    onConfirm: () => {},
+    onCancel: () => {},
+    onClose: () => {},
+  };
+
+  switch (registryItem?.id) {
+    case 'paper-origami-modal':
+      return (
+        <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+          <PaperOrigamiModal
+            isOpen={true}
+            isEmbedded={true}
+            title={settings?.title ?? 'Open document'}
+            message={settings?.message ?? 'This paper fold can reveal any content.'}
+            tone={settings?.tone ?? 'Ivory'}
+            speed={settings?.speed ?? 1}
+            shadow={settings?.shadow ?? 14}
+          />
+        </div>
+      );
+    case 'decryption-breach':
+      return (
+        <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+          <DecryptionBreachModal {...commonModalProps} />
+        </div>
+      );
+    case 'chamber-drop':
+      return (
+        <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+          <ChamberDropModal {...commonModalProps} />
+        </div>
+      );
+    case 'prism-reveal':
+      return (
+        <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+          <PrismRevealModal {...commonModalProps} />
+        </div>
+      );
+    case 'sidebar-dock':
+      return (
+        <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+          <SidebarDockModal {...commonModalProps} />
+        </div>
+      );
+    case 'split-pane':
+      return (
+        <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+          <SplitPaneModal {...commonModalProps} />
+        </div>
+      );
+    case 'depth-inversion':
+      return (
+        <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+          <DepthInversionModal {...commonModalProps} />
+        </div>
+      );
+    default:
+      return (
+        <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+          <GlassmorphicLiquidModal
+            isOpen={true}
+            isEmbedded={true}
+            title={settings?.title ?? 'Confirm action'}
+            message={settings?.message ?? 'Are you sure?'}
+            tone={settings?.tone ?? 'Neutral'}
+            onConfirm={() => {}}
+            onCancel={() => {}}
+            onClose={() => {}}
+          />
+        </div>
+      );
+  }
+}
+
+function LoaderPreview({ registryItem, settings, previewKey }) {
+  switch (registryItem?.id) {
+    case 'paper-fold-loader':
+      return (
+        <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
+          <PaperFoldLoader
+            isOpen={true}
+            isEmbedded={true}
+            message={settings?.message ?? 'Preparing the paper'}
+            tone={settings?.tone ?? 'Parchment'}
+            speed={settings?.speed ?? 1}
+            thickness={settings?.thickness ?? 4}
+          />
+        </div>
+      );
+    case 'binary-stream':
+      return (
+        <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+          <BinaryStreamLoader />
+        </div>
+      );
+    case 'bezier-wave':
+      return (
+        <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+          <BezierWaveLoader />
+        </div>
+      );
+    case 'quantum-grid':
+      return (
+        <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+          <QuantumGridLoader />
+        </div>
+      );
+    case 'fibonacci-spiral':
+      return (
+        <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+          <FibonacciSpiralLoader />
+        </div>
+      );
+    case 'memory-blocks':
+      return (
+        <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+          <MemoryBlocksLoader />
+        </div>
+      );
+    case 'mercury-spill':
+      return (
+        <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+          <MercurySpillLoader />
+        </div>
+      );
+    default:
+      return (
+        <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+          <GlassmorphicLiquidLoader
+            isOpen={true}
+            isEmbedded={true}
+            message={settings?.message ?? 'Loading your experience'}
+            size={settings?.size ?? 112}
+            speed={settings?.speed ?? 1}
+          />
+        </div>
+      );
+  }
+}
+
 export default function MercuryChamber() {
   const chamberRef = useRef(null);
   const glowRef = useRef(null);
@@ -28,8 +181,6 @@ export default function MercuryChamber() {
 
   const hasToastPreview = registryItem?.category === 'toast';
   const isPaperToast = registryItem?.id === 'paper-receipt-toast';
-  const isPaperModal = registryItem?.id === 'paper-origami-modal';
-  const isPaperLoader = registryItem?.id === 'paper-fold-loader';
   const previewKey = `${registryItem?.id ?? 'none'}:${animationTick}`;
 
   const createOverclockNodes = () => {
@@ -141,81 +292,9 @@ export default function MercuryChamber() {
               </div>
             )
           ) : registryItem?.category === 'modal' ? (
-            isPaperModal ? (
-              <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
-                <PaperOrigamiModal
-                  isOpen={true}
-                  isEmbedded={true}
-                  title={settings?.title ?? 'Open document'}
-                  message={settings?.message ?? 'This paper fold can reveal any content.'}
-                  tone={settings?.tone ?? 'Ivory'}
-                  speed={settings?.speed ?? 1}
-                  shadow={settings?.shadow ?? 14}
-                />
-              </div>
-            ) : (
-              <div key={previewKey} className="relative flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
-                <GlassmorphicLiquidModal
-                  isOpen={true}
-                  isEmbedded={true}
-                  title={settings?.title ?? 'Confirm action'}
-                  message={settings?.message ?? 'Are you sure?'}
-                  tone={settings?.tone ?? 'Neutral'}
-                  onConfirm={() => {
-                    /* noop for preview - user can wire actions in workspace */
-                  }}
-                  onCancel={() => {}}
-                  onClose={() => {}}
-                />
-              </div>
-            )
+            <ModalPreview registryItem={registryItem} settings={settings} previewKey={previewKey} />
           ) : registryItem?.category === 'loader' ? (
-            registryItem?.id === 'paper-fold-loader' ? (
-              <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
-                <PaperFoldLoader
-                  isOpen={true}
-                  isEmbedded={true}
-                  message={settings?.message ?? 'Preparing the paper'}
-                  tone={settings?.tone ?? 'Parchment'}
-                  speed={settings?.speed ?? 1}
-                  thickness={settings?.thickness ?? 4}
-                />
-              </div>
-            ) : registryItem?.id === 'binary-stream' ? (
-              <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
-                <BinaryStreamLoader />
-              </div>
-            ) : registryItem?.id === 'bezier-wave' ? (
-              <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
-                <BezierWaveLoader />
-                          ) : registryItem?.id === 'quantum-grid' ? (
-                            <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
-                              <QuantumGridLoader />
-                            </div>
-                          ) : registryItem?.id === 'fibonacci-spiral' ? (
-                            <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
-                              <FibonacciSpiralLoader />
-                                        ) : registryItem?.id === 'memory-blocks' ? (
-                                          <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
-                                            <MemoryBlocksLoader />
-                                          </div>
-                                        ) : registryItem?.id === 'mercury-spill' ? (
-                                          <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
-                                            <MercurySpillLoader />
-                                          </div>
-                            </div>
-              </div>
-            ) : (
-              <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
-                <GlassmorphicLiquidLoader
-                  isOpen={true}
-                  isEmbedded={true}
-                  message={settings?.message ?? 'Loading your experience'}
-                  size={settings?.size ?? 112}
-                  speed={settings?.speed ?? 1}
-                />
-              </div>
-            )
+            <LoaderPreview registryItem={registryItem} settings={settings} previewKey={previewKey} />
           ) : registryItem ? (
             <div className="rounded-[2rem] border border-white/10 bg-black/40 p-8 text-sm text-zinc-400">
               No preview available for this component.
