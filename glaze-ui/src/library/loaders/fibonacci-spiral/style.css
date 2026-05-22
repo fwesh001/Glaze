@@ -1,0 +1,13 @@
+/* Fibonacci Spiral Trace Loader Styles */
+
+.fibonacci-spiral-container {
+  perspective: 1200px;
+}
+
+.fibonacci-spiral-svg {
+  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5));
+}
+
+.spiral-path {
+  will-change: stroke-dashoffset, opacity;
+}
