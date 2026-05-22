@@ -1,0 +1,26 @@
+/* Hardware Memory Allocation Block Loader Styles */
+
+.memory-blocks-container {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.memory-block {
+  will-change: transform, box-shadow, background-color;
+  transition: all 0.075s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.block-retry {
+  animation: retry-pulse 0.15s ease-out;
+}
+
+@keyframes retry-pulse {
+  0% {
+    background-color: rgba(239, 68, 68, 0.6);
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.8);
+  }
+  100% {
+    background-color: rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+  }
+}
