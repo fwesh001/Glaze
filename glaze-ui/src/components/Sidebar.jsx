@@ -44,7 +44,7 @@ export default function Sidebar({ items = [] }) {
     <aside
       ref={asideRef}
       style={{ width: 272 }}
-      className="overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-950/95 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_24px_90px_rgba(0,0,0,0.55)]"
+      className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-hidden rounded-[2rem] border border-zinc-800 bg-zinc-950/95 px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_24px_90px_rgba(0,0,0,0.55)] lg:top-5 lg:max-h-[calc(100vh-2.5rem)]"
     >
       <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-4">
         <div className="flex items-center gap-3">
