@@ -7,6 +7,7 @@ import { Activity, RefreshCw } from 'lucide-react';
 
 import LiquidToast from '../library/toasts/liquid-toast/index.jsx';
 import GlassmorphicLiquidModal from '../library/modals/glassmorphic-liquid-modal/index.jsx';
+import GlassmorphicLiquidLoader from '../library/loaders/glassmorphic-liquid-loader/index.jsx';
 import { useWorkspace } from './WorkspaceProvider.jsx';
 
 export default function MercuryChamber() {
@@ -124,6 +125,14 @@ export default function MercuryChamber() {
               }}
               onCancel={() => {}}
               onClose={() => {}}
+            />
+          ) : registryItem?.category === 'loader' ? (
+            <GlassmorphicLiquidLoader
+              isOpen={true}
+              isEmbedded={true}
+              message={registryItem?.settings?.message ?? 'Loading your experience'}
+              size={registryItem?.settings?.size ?? 112}
+              speed={registryItem?.settings?.speed ?? 1}
             />
           ) : registryItem ? (
             <div className="rounded-[2rem] border border-white/10 bg-black/40 p-8 text-sm text-zinc-400">
