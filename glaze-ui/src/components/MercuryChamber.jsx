@@ -11,6 +11,8 @@ import GlassmorphicLiquidModal from '../library/modals/glassmorphic-liquid-modal
 import PaperOrigamiModal from '../library/modals/paper-origami-modal/index.jsx';
 import GlassmorphicLiquidLoader from '../library/loaders/glassmorphic-liquid-loader/index.jsx';
 import PaperFoldLoader from '../library/loaders/paper-fold-loader/index.jsx';
+import BinaryStreamLoader from '../library/loaders/binary-stream/index.jsx';
+import BezierWaveLoader from '../library/loaders/bezier-wave/index.jsx';
 import { useWorkspace } from './WorkspaceProvider.jsx';
 
 export default function MercuryChamber() {
@@ -164,7 +166,7 @@ export default function MercuryChamber() {
               </div>
             )
           ) : registryItem?.category === 'loader' ? (
-            isPaperLoader ? (
+            registryItem?.id === 'paper-fold-loader' ? (
               <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center overflow-hidden rounded-[2rem]">
                 <PaperFoldLoader
                   isOpen={true}
@@ -174,6 +176,14 @@ export default function MercuryChamber() {
                   speed={settings?.speed ?? 1}
                   thickness={settings?.thickness ?? 4}
                 />
+              </div>
+            ) : registryItem?.id === 'binary-stream' ? (
+              <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+                <BinaryStreamLoader />
+              </div>
+            ) : registryItem?.id === 'bezier-wave' ? (
+              <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
+                <BezierWaveLoader />
               </div>
             ) : (
               <div key={previewKey} className="flex h-full min-h-[28rem] w-full items-center justify-center">
