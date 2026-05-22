@@ -6,8 +6,11 @@ import gsap from 'gsap';
 import { Activity, RefreshCw } from 'lucide-react';
 
 import LiquidToast from '../library/toasts/liquid-toast/index.jsx';
+import PaperReceiptToast from '../library/toasts/paper-receipt-toast/index.jsx';
 import GlassmorphicLiquidModal from '../library/modals/glassmorphic-liquid-modal/index.jsx';
+import PaperOrigamiModal from '../library/modals/paper-origami-modal/index.jsx';
 import GlassmorphicLiquidLoader from '../library/loaders/glassmorphic-liquid-loader/index.jsx';
+import PaperFoldLoader from '../library/loaders/paper-fold-loader/index.jsx';
 import { useWorkspace } from './WorkspaceProvider.jsx';
 
 export default function MercuryChamber() {
@@ -18,6 +21,9 @@ export default function MercuryChamber() {
   const { registryItem, settings, animationTick, resetAnimation } = useWorkspace();
 
   const hasToastPreview = registryItem?.category === 'toast';
+  const isPaperToast = registryItem?.id === 'paper-receipt-toast';
+  const isPaperModal = registryItem?.id === 'paper-origami-modal';
+  const isPaperLoader = registryItem?.id === 'paper-fold-loader';
 
   const createOverclockNodes = () => {
     const count = Math.floor(gsap.utils.random(30, 50, 1));
@@ -113,9 +119,28 @@ export default function MercuryChamber() {
 
         <div className="relative flex w-full max-w-2xl flex-col gap-4">
           {registryItem?.category === 'toast' && overclockNodes.length === 0 ? (
-            <LiquidToast stackIndex={0} />
+            isPaperToast ? (
+              <PaperReceiptToast
+                message={settings?.message ?? 'Payment received'}
+                tone={settings?.tone ?? 'Kraft'}
+                speed={settings?.speed ?? 1}
+                depth={settings?.depth ?? 14}
+              />
+            ) : (
+              <LiquidToast stackIndex={0} />
+            )
           ) : registryItem?.category === 'modal' ? (
-            <GlassmorphicLiquidModal
+            isPaperModal ? (
+              <PaperOrigamiModal
+                isOpen={true}
+                title={settings?.title ?? 'Open document'}
+                message={settings?.message ?? 'This paper fold can reveal any content.'}
+                tone={settings?.tone ?? 'Ivory'}
+                speed={settings?.speed ?? 1}
+                shadow={settings?.shadow ?? 14}
+              />
+            ) : (
+              <GlassmorphicLiquidModal
               isOpen={true}
               isEmbedded={true}
               title={settings?.title ?? 'Confirm action'}
@@ -126,15 +151,26 @@ export default function MercuryChamber() {
               }}
               onCancel={() => {}}
               onClose={() => {}}
-            />
+              />
+            )
           ) : registryItem?.category === 'loader' ? (
-            <GlassmorphicLiquidLoader
-              isOpen={true}
-              isEmbedded={true}
-              message={settings?.message ?? 'Loading your experience'}
-              size={settings?.size ?? 112}
-              speed={settings?.speed ?? 1}
-            />
+            isPaperLoader ? (
+              <PaperFoldLoader
+                isOpen={true}
+                message={settings?.message ?? 'Preparing the paper'}
+                tone={settings?.tone ?? 'Parchment'}
+                speed={settings?.speed ?? 1}
+                thickness={settings?.thickness ?? 4}
+              />
+            ) : (
+              <GlassmorphicLiquidLoader
+                isOpen={true}
+                isEmbedded={true}
+                message={settings?.message ?? 'Loading your experience'}
+                size={settings?.size ?? 112}
+                speed={settings?.speed ?? 1}
+              />
+            )
           ) : registryItem ? (
             <div className="rounded-[2rem] border border-white/10 bg-black/40 p-8 text-sm text-zinc-400">
               No preview available for this component.
