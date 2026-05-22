@@ -166,7 +166,31 @@ export default function Sidebar({ registryItem }) {
             })}
           </nav>
         </>
-      ) : null}
+      ) : (
+        <nav className="mt-4 flex flex-col gap-3">
+          {categoryTabs.map((tab) => {
+            const isActive = activeCategory === tab.key;
+            const abbreviation = tab.key === 'all' ? 'A' : tab.key[0].toUpperCase();
+
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveCategory(tab.key)}
+                title={tab.label}
+                className={[
+                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all',
+                  isActive
+                    ? 'border-cyan-300/40 bg-cyan-300/20 text-cyan-200 shadow-[0_0_20px_rgba(52,211,255,0.15)]'
+                    : 'border-white/10 bg-white/[0.04] text-zinc-400 hover:border-white/20 hover:bg-white/[0.08] hover:text-white',
+                ].join(' ')}
+              >
+                <span className="text-[0.7rem] font-bold uppercase tracking-[0.24em]">{abbreviation}</span>
+              </button>
+            );
+          })}
+        </nav>
+      )}
     </aside>
   );
 }
