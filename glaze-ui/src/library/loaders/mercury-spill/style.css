@@ -1,0 +1,29 @@
+/* Mercury Spill Loader Styles */
+
+.mercury-spill-container {
+  perspective: 1000px;
+}
+
+.metaball-layer {
+  will-change: filter;
+}
+
+.blob {
+  will-change: transform;
+  transition: background-color 0.3s ease;
+}
+
+.blob-indicator {
+  animation: pulse-glow 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.7;
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 16px rgba(34, 211, 238, 0.9);
+  }
+}
