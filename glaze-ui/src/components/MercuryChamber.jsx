@@ -1,55 +1,28 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import gsap from 'gsap';
 import { RefreshCw } from 'lucide-react';
 
+import LiquidToast from '../library/toasts/liquid-toast/index.jsx';
 import { useWorkspace } from './WorkspaceProvider.jsx';
-
-function LiquidToastPreview({ settings }) {
-  return (
-    <div className="relative overflow-hidden rounded-[2rem] border border-white/15 bg-white/[0.04] px-6 py-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_30px_90px_rgba(0,0,0,0.45)] backdrop-blur-3xl">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(52,211,255,0.18),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.12),transparent_32%)]" />
-      <div className="relative">
-        <div className="text-xs uppercase tracking-[0.45em] text-cyan-300/80">Preview</div>
-        <h3 className="mt-4 text-2xl font-semibold text-white">{settings.message}</h3>
-        <p className="mt-3 max-w-md text-sm leading-6 text-zinc-300">
-          Viscosity {settings.viscosity} · Blur {settings.blur}px · Glow {settings.glow}
-        </p>
-      </div>
-    </div>
-  );
-}
 
 export default function MercuryChamber() {
   const chamberRef = useRef(null);
-  const previewRef = useRef(null);
   const glowRef = useRef(null);
-  const { registryItem, settings, animationTick, resetAnimation } = useWorkspace();
-
-  const componentPreview = useMemo(() => {
-    if (!registryItem) {
-      return null;
-    }
-
-    return <LiquidToastPreview settings={settings} />;
-  }, [registryItem, settings]);
+  const { registryItem, animationTick, resetAnimation } = useWorkspace();
 
   useEffect(() => {
-    const preview = previewRef.current;
     const glow = glowRef.current;
 
-    if (!preview || !glow) {
+    if (!glow) {
       return undefined;
     }
 
     const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-    timeline
-      .set([preview, glow], { clearProps: 'all' })
-      .fromTo(preview, { opacity: 0, y: 18, scale: 0.98 }, { opacity: 1, y: 0, scale: 1, duration: 0.6 })
-      .fromTo(glow, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.55 }, '<');
+    timeline.fromTo(glow, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.55 });
 
     const mesh = gsap.to(chamberRef.current, {
       backgroundPosition: '100% 100%',
@@ -76,8 +49,10 @@ export default function MercuryChamber() {
       />
 
       <div className="relative flex h-full min-h-[360px] items-center justify-center">
-        <div ref={previewRef} className="w-full max-w-2xl">
-          {componentPreview ?? (
+        <div className="flex w-full max-w-2xl flex-col gap-4">
+          {registryItem?.category === 'toast' ? (
+            <LiquidToast stackIndex={0} />
+          ) : (
             <div className="rounded-[2rem] border border-white/10 bg-black/40 p-8 text-sm text-zinc-400">
               No component selected.
             </div>
