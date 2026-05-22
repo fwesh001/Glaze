@@ -1,0 +1,11 @@
+{
+  "id": "edge-snapper",
+  "name": "Screen-Edge Snapper",
+  "category": "toast",
+  "description": "Fluid free-moving module that elastically snaps to screen boundaries with geometry deformation.",
+  "settingsConfig": [
+    { "id": "message", "label": "Toast Message", "type": "text", "default": "Boundary magnet active" },
+    { "id": "snapThreshold", "label": "Snap Threshold", "type": "slider", "min": 20, "max": 160, "step": 5, "default": 70 },
+    { "id": "speed", "label": "Snap Speed", "type": "slider", "min": 0.35, "max": 2.5, "step": 0.05, "default": 1 }
+  ]
+}
