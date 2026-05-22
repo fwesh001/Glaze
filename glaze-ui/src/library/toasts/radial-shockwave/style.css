@@ -1,0 +1,9 @@
+.radial-shockwave {
+  width: 72px;
+  min-height: 72px;
+  border-radius: 999px;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  background: radial-gradient(circle at 30% 20%, rgba(103, 232, 249, 0.85), rgba(12, 74, 110, 0.85));
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.75), 0 22px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
