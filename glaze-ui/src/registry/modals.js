@@ -4,7 +4,7 @@ export const modalRegistry = [
     name: 'Glassmorphic Liquid Modal',
     category: 'modal',
     description: 'A layered dialog frame reserved for future control deck overlays.',
-    directoryPath: '/library/modals/liquid-modal',
+      directoryPath: '/library/modals/glassmorphic-liquid-modal',
     settingsConfig: [
       { id: 'title', label: 'Modal Title', type: 'text', default: 'Confirm action' },
       {
