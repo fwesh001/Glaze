@@ -1,0 +1,8 @@
+.decryption-breach-shell { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; }
+.decryption-breach-shell.embedded { position: absolute; z-index: 45; }
+.decryption-breach-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.72); backdrop-filter: blur(8px); }
+.decryption-breach-shell.embedded .decryption-breach-backdrop { background: rgba(0, 0, 0, 0.35); }
+.decryption-breach-panel { position: relative; width: min(38rem, 92vw); border-radius: 1.25rem; border: 1px solid rgba(56, 189, 248, 0.45); background: linear-gradient(160deg, rgba(5, 9, 18, 0.96), rgba(2, 5, 12, 0.98)); padding: 1.4rem; box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.15), 0 24px 80px rgba(0, 0, 0, 0.75); overflow: hidden; }
+.decryption-breach-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(56,189,248,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,.12) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.35; pointer-events: none; }
+.decryption-breach-title { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .12em; text-transform: uppercase; color: #86efac; text-shadow: 0 0 12px rgba(52,211,153,.55); }
+.decryption-breach-body { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #67e8f9; text-shadow: 0 0 10px rgba(34,211,238,.45); }
