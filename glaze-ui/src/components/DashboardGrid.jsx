@@ -92,7 +92,7 @@ export default function DashboardGrid({ items = [], onSelect = () => {} }) {
   };
 
   return (
-    <section ref={containerRef} className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <section ref={containerRef} className="grid auto-rows-fr gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {items.map((item) => (
         <button
           key={item.id}
@@ -102,7 +102,7 @@ export default function DashboardGrid({ items = [], onSelect = () => {} }) {
           onMouseEnter={(event) => handleMouseEnter(event.currentTarget)}
           onMouseMove={(event) => handleMouseMove(event, event.currentTarget)}
           onMouseLeave={(event) => handleMouseLeave(event.currentTarget)}
-          className="group rounded-3xl border border-white/10 bg-white/[0.03] p-5 text-left transition-colors duration-200 hover:bg-white/[0.05]"
+          className="group min-h-[14rem] rounded-3xl border border-white/10 bg-white/[0.03] p-5 text-left transition-colors duration-200 hover:bg-white/[0.05]"
         >
           <div className="flex items-center justify-between gap-3">
             <div className="text-xs uppercase tracking-[0.35em] text-cyan-300/80">{item.category}</div>
