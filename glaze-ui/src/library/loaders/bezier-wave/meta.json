@@ -1,0 +1,35 @@
+{
+  "id": "bezier-wave",
+  "name": "Vector Bezier Wave",
+  "category": "loader",
+  "description": "Liquid sine wave ripple traversing across a dark grid backdrop with dynamic amplitude and frequency control.",
+  "settingsConfig": [
+    {
+      "id": "speed",
+      "label": "Wave Velocity",
+      "type": "slider",
+      "min": 0.35,
+      "max": 2.5,
+      "step": 0.05,
+      "default": 1
+    },
+    {
+      "id": "amplitude",
+      "label": "Wave Height",
+      "type": "slider",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.1,
+      "default": 1.5
+    },
+    {
+      "id": "frequency",
+      "label": "Wave Frequency",
+      "type": "slider",
+      "min": 0.5,
+      "max": 3,
+      "step": 0.1,
+      "default": 1
+    }
+  ]
+}
