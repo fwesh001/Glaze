@@ -1,8 +1,13 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+import gsap from 'gsap';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import { useWorkspace } from './WorkspaceProvider.jsx';
+import { BASE_TOAST_SNIPPET, TARGET_LANGUAGE_MAP, buildMorphCode, requestMorphCode, serializeMorphPayload } from '../lib/morph.js';
 
 function ControlRow({ label, children, hint }) {
   return (
@@ -16,9 +21,30 @@ function ControlRow({ label, children, hint }) {
   );
 }
 
+function scrambleCode(source) {
+  const glyphs = '░▒▓█<>/={}[]()_+-*#@$';
+
+  return source
+    .split('')
+    .map((character) => {
+      if (character === '\n' || character === '\t' || character === ' ') {
+        return character;
+      }
+
+      return glyphs[Math.floor(Math.random() * glyphs.length)];
+    })
+    .join('');
+}
+
 export default function ControlPanel() {
   const [activeTab, setActiveTab] = useState('settings');
+  const [language, setLanguage] = useState('React (JSX)');
+  const [prompt, setPrompt] = useState('');
+  const [displayCode, setDisplayCode] = useState('');
+  const [isMorphing, setIsMorphing] = useState(false);
   const { registryItem, settings, setSetting } = useWorkspace();
+  const codePaneRef = useRef(null);
+  const morphTimersRef = useRef([]);
 
   const { textSettings, physicsSettings } = useMemo(() => {
     const settingsConfig = registryItem?.settingsConfig ?? [];
@@ -28,6 +54,76 @@ export default function ControlPanel() {
       physicsSettings: settingsConfig.filter((setting) => setting.type === 'slider'),
     };
   }, [registryItem]);
+
+  const serializedPayload = useMemo(
+    () =>
+      serializeMorphPayload({
+        language,
+        settings,
+        prompt,
+        registryItem,
+        snippet: BASE_TOAST_SNIPPET,
+      }),
+    [language, prompt, registryItem, settings],
+  );
+
+  const syntaxLanguage = TARGET_LANGUAGE_MAP[language] ?? 'jsx';
+
+  useEffect(() => {
+    setDisplayCode(buildMorphCode(serializedPayload));
+  }, [serializedPayload]);
+
+  useEffect(() => {
+    const handleMorph = async () => {
+      morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+      morphTimersRef.current = [];
+
+      setIsMorphing(true);
+
+      try {
+        const response = await requestMorphCode(serializedPayload);
+        const nextCode = response.code;
+
+        if (!nextCode) {
+          return;
+        }
+
+        const pane = codePaneRef.current;
+
+        if (pane) {
+          gsap.fromTo(
+            pane,
+            { filter: 'brightness(1.12)', boxShadow: '0 0 0 1px rgba(255,255,255,0.14), 0 0 26px rgba(52, 211, 255, 0.12)' },
+            { filter: 'brightness(1)', boxShadow: '0 0 0 1px rgba(255,255,255,0.08), 0 30px 70px rgba(0,0,0,0.45)', duration: 0.28 },
+          );
+        }
+
+        setDisplayCode(scrambleCode(nextCode));
+
+        const revealTimer = window.setTimeout(() => {
+          setDisplayCode(nextCode);
+        }, 110);
+
+        const settleTimer = window.setTimeout(() => {
+          setIsMorphing(false);
+        }, 220);
+
+        morphTimersRef.current = [revealTimer, settleTimer];
+      } catch {
+        setDisplayCode(buildMorphCode(serializedPayload));
+        setIsMorphing(false);
+      }
+    };
+
+    const debounceTimer = window.setTimeout(() => {
+      void handleMorph();
+    }, 220);
+
+    return () => {
+      window.clearTimeout(debounceTimer);
+      morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+    };
+  }, [serializedPayload]);
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-glass">
@@ -104,23 +200,75 @@ export default function ControlPanel() {
           </div>
         </div>
       ) : (
-        <div className="mt-5 grid gap-4 lg:grid-cols-[1.35fr_0.65fr]">
-          <div className="rounded-2xl border border-white/10 bg-black/60 p-4 text-sm text-zinc-400">
-            <div className="text-xs uppercase tracking-[0.35em] text-zinc-500">Code Output</div>
-            <pre className="mt-4 overflow-auto text-xs leading-6 text-zinc-300">
-{`<${registryItem?.name ?? 'Component'} />
-// code placeholder will render here`}
-            </pre>
+        <div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_0.55fr]">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/70 px-4 py-3">
+              <div>
+                <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">Code Matrix</div>
+                <div className="mt-1 text-sm text-zinc-300">{registryItem?.name ?? 'Component Blueprint'}</div>
+              </div>
+
+              <label className="flex items-center gap-3 text-xs uppercase tracking-[0.35em] text-zinc-500">
+                Language
+                <select
+                  value={language}
+                  onChange={(event) => setLanguage(event.target.value)}
+                  className="rounded-full border border-white/10 bg-black px-3 py-2 text-white outline-none"
+                >
+                  <option>React (JSX)</option>
+                  <option>Vue</option>
+                  <option>Vanilla JS</option>
+                </select>
+              </label>
+            </div>
+
+            <div
+              ref={codePaneRef}
+              className="overflow-hidden rounded-3xl border border-white/10 bg-[#07070a] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_24px_80px_rgba(0,0,0,0.45)]"
+            >
+              <div className="flex items-center justify-between border-b border-white/5 px-4 py-3 text-[0.65rem] uppercase tracking-[0.4em] text-zinc-500">
+                <span>Syntax Visualizer</span>
+                <span className={isMorphing ? 'text-cyan-300/80' : 'text-zinc-500'}>{isMorphing ? 'Recompiling' : 'Stable'}</span>
+              </div>
+
+              <SyntaxHighlighter
+                language={syntaxLanguage}
+                style={vscDarkPlus}
+                customStyle={{
+                  margin: 0,
+                  padding: '1.25rem',
+                  background: '#07070a',
+                  fontSize: '0.78rem',
+                  lineHeight: '1.7',
+                  minHeight: '22rem',
+                }}
+                codeTagProps={{ style: { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace' } }}
+                wrapLongLines
+              >
+                {displayCode}
+              </SyntaxHighlighter>
+            </div>
           </div>
 
-          <label className="flex flex-col rounded-2xl border border-white/10 bg-black/60 p-4 text-sm text-zinc-300">
-            <div className="text-xs uppercase tracking-[0.35em] text-zinc-500">AI Prompt Console</div>
-            <textarea
-              rows={9}
-              placeholder="Describe the next transform..."
-              className="mt-4 min-h-40 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white outline-none placeholder:text-zinc-600"
-            />
-          </label>
+          <div className="flex flex-col gap-4">
+            <label className="flex h-full flex-1 flex-col rounded-2xl border border-white/10 bg-black/60 p-4 text-sm text-zinc-300">
+              <div className="text-xs uppercase tracking-[0.35em] text-zinc-500">AI Prompt Console</div>
+              <textarea
+                rows={10}
+                value={prompt}
+                onChange={(event) => setPrompt(event.target.value)}
+                placeholder="Change it to use Tailwind utility classes..."
+                className="mt-4 min-h-40 flex-1 rounded-2xl border border-white/10 bg-white/[0.03] p-4 font-mono text-sm text-white outline-none placeholder:text-zinc-600"
+              />
+            </label>
+
+            <div className="rounded-2xl border border-white/10 bg-black/60 p-4 text-xs text-zinc-400">
+              <div className="uppercase tracking-[0.35em] text-zinc-500">Serialized Telemetry</div>
+              <pre className="mt-4 max-h-48 overflow-auto whitespace-pre-wrap break-words text-[0.7rem] leading-6 text-zinc-300">
+                {JSON.stringify(serializedPayload, null, 2)}
+              </pre>
+            </div>
+          </div>
         </div>
       )}
     </section>
