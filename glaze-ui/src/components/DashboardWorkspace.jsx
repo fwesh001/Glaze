@@ -85,7 +85,6 @@ export default function DashboardWorkspace() {
             Showing <span className="text-white">{filteredItems.length}</span> of{' '}
             <span className="text-white">{registryCatalog.length}</span> components
           </span>
-          <span className="uppercase tracking-[0.35em] text-cyan-300/80">Phase 2</span>
         </div>
 
         <DashboardGrid items={filteredItems} onSelect={(item) => router.push(`/component/${item.id}`)} />
