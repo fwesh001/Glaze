@@ -1,0 +1,11 @@
+{
+  "id": "depth-stacker",
+  "name": "Holographic Depth Stacker",
+  "category": "toast",
+  "description": "3D spatial toast stack where latest instance moves to foreground while older alerts recede.",
+  "settingsConfig": [
+    { "id": "message", "label": "Toast Message", "type": "text", "default": "Depth focus lock acquired" },
+    { "id": "stack", "label": "Stack Count", "type": "slider", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "id": "speed", "label": "Cycle Speed", "type": "slider", "min": 0.35, "max": 2.5, "step": 0.05, "default": 1 }
+  ]
+}
