@@ -62,6 +62,22 @@ function writeRegistryFiles(entries) {
     fs.writeFileSync(target, content, 'utf8');
     console.log('Wrote', target);
   });
+
+  // Build aliases mapping: read `aliases` array from meta entries and write aliases.js
+  const aliases = {};
+  entries.forEach((e) => {
+    if (Array.isArray(e.aliases)) {
+      e.aliases.forEach((aliasId) => {
+        // Only map if not already mapped to avoid accidental overwrites
+        if (!aliases[aliasId]) aliases[aliasId] = e.id;
+      });
+    }
+  });
+
+  const aliasesPath = path.join(REGISTRY_DIR, 'aliases.js');
+  const aliasesContent = `export const registryAliases = ${JSON.stringify(aliases, null, 2)};\n\nexport default registryAliases;\n`;
+  fs.writeFileSync(aliasesPath, aliasesContent, 'utf8');
+  console.log('Wrote', aliasesPath);
 }
 
 function main() {
