@@ -15,6 +15,7 @@ const toneStyles = {
 
 export default function PaperFoldLoader({
   isOpen = true,
+  isEmbedded = false,
   message = 'Preparing the paper',
   tone = 'Parchment',
   speed = 1,
@@ -67,8 +68,8 @@ export default function PaperFoldLoader({
   if (!isOpen) return null;
 
   return (
-    <div ref={loaderRef} className="paper-fold-loader-shell">
-      <div className="paper-fold-loader-backdrop" />
+    <div ref={loaderRef} className={`paper-fold-loader-shell ${isEmbedded ? 'embedded' : ''}`}>
+      <div className={`paper-fold-loader-backdrop ${isEmbedded ? 'embedded' : ''}`} />
       <div
         className="paper-fold-loader"
         style={{
