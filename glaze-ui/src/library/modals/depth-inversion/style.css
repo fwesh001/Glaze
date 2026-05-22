@@ -1,0 +1,5 @@
+.depth-inversion-shell { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; }
+.depth-inversion-shell.embedded { position: absolute; z-index: 45; }
+.depth-inversion-backdrop { position: absolute; inset: 0; background: rgba(8, 12, 20, 0.55); backdrop-filter: blur(12px); }
+.depth-inversion-shell.embedded .depth-inversion-backdrop { background: rgba(8, 12, 20, 0.3); }
+.depth-inversion-panel { width: min(34rem, 88vw); border-radius: 1rem; border: 1px solid rgba(255,255,255,.82); background: linear-gradient(160deg, rgba(255,255,255,.95), rgba(225,235,255,.82)); color: #020617; padding: 1.5rem; box-shadow: 0 35px 120px rgba(0,0,0,.45); }
