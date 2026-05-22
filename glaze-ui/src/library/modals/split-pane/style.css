@@ -1,0 +1,9 @@
+.split-pane-shell { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; }
+.split-pane-shell.embedded { position: absolute; z-index: 45; }
+.split-pane-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.72); backdrop-filter: blur(8px); }
+.split-pane-shell.embedded .split-pane-backdrop { background: rgba(0, 0, 0, 0.3); }
+.split-pane-stage { width: min(48rem, 94vw); height: min(24rem, 76vh); position: relative; border-radius: 1.25rem; overflow: hidden; }
+.split-pane-line { position: absolute; left: 50%; top: 0; transform: translateX(-50%); width: 2px; height: 100%; background: linear-gradient(to bottom, rgba(255,255,255,.9), rgba(255,255,255,.2)); box-shadow: 0 0 16px rgba(255,255,255,.42); z-index: 3; }
+.split-pane-panel { position: absolute; top: 0; width: 50%; height: 100%; background: linear-gradient(160deg, rgba(10,10,16,.95), rgba(2,4,10,.98)); border: 1px solid rgba(255,255,255,.12); padding: 1.1rem; }
+.split-pane-left { left: 0; border-right: none; }
+.split-pane-right { right: 0; border-left: none; }
