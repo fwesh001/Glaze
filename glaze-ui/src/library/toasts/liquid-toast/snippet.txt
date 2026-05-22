@@ -1,0 +1,2 @@
+Glaze UI liquid toast scaffold reference.
+Use this blueprint as the registry-linked component seed for future AI prompt injection.
