@@ -7,12 +7,23 @@
   z-index: 50;
 }
 
+.glassmorphic-liquid-modal-container.embedded {
+  position: absolute;
+  inset: 0;
+  z-index: 45;
+}
+
 .glassmorphic-liquid-modal-backdrop {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   cursor: pointer;
+}
+
+.glassmorphic-liquid-modal-backdrop.embedded {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
 }
 
 .glassmorphic-liquid-modal-center {
