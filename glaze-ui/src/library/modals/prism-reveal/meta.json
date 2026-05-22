@@ -1,0 +1,11 @@
+{
+  "id": "prism-reveal",
+  "name": "Radial Prism Reveal",
+  "category": "modal",
+  "description": "Blurred circular glass dialog with SVG clip-path expansion and rainbow prism lens flare sweep.",
+  "settingsConfig": [
+    { "id": "title", "label": "Modal Title", "type": "text", "default": "Prism Channel" },
+    { "id": "message", "label": "Body Message", "type": "text", "default": "Spectrum gate expanded. Apply refracted profile now?" },
+    { "id": "speed", "label": "Reveal Speed", "type": "slider", "min": 0.35, "max": 2.5, "step": 0.05, "default": 1 }
+  ]
+}
