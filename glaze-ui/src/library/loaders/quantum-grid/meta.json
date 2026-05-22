@@ -1,0 +1,17 @@
+{
+  "id": "quantum-grid",
+  "name": "Quantum Grid Orbit",
+  "category": "loader",
+  "description": "16-node geometric matrix with chaotic particle dispersion and elastic magnetic snap-back to grid coordinates.",
+  "settingsConfig": [
+    {
+      "id": "speed",
+      "label": "Snap Velocity",
+      "type": "slider",
+      "min": 0.35,
+      "max": 2.5,
+      "step": 0.05,
+      "default": 1
+    }
+  ]
+}
