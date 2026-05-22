@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useEffect, useContext, useMemo, useState } from 'react';
 
 const WorkspaceContext = createContext(null);
 
@@ -14,6 +14,11 @@ function buildInitialState(settingsConfig = []) {
 export function WorkspaceProvider({ registryItem, children }) {
   const [settings, setSettings] = useState(() => buildInitialState(registryItem?.settingsConfig));
   const [animationTick, setAnimationTick] = useState(0);
+
+  useEffect(() => {
+    setSettings(buildInitialState(registryItem?.settingsConfig));
+    setAnimationTick(0);
+  }, [registryItem]);
 
   const value = useMemo(
     () => ({
