@@ -1,0 +1,11 @@
+{
+  "id": "decryption-breach",
+  "name": "Glitched Decryption Breach",
+  "category": "modal",
+  "description": "Cybernetic breach panel with snapping entry and ASCII text scrambling that settles into readable strings.",
+  "settingsConfig": [
+    { "id": "title", "label": "Modal Title", "type": "text", "default": "Decryption Breach" },
+    { "id": "message", "label": "Body Message", "type": "text", "default": "Cipher stream stabilized. Deploy secure handoff?" },
+    { "id": "speed", "label": "Glitch Speed", "type": "slider", "min": 0.35, "max": 2.5, "step": 0.05, "default": 1 }
+  ]
+}
