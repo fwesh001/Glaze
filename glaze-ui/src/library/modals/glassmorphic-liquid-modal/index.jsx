@@ -14,6 +14,7 @@ export default function GlassmorphicLiquidModal({
   onClose = () => {},
   title = 'Confirm Action',
   message = 'Are you sure you want to proceed?',
+  tone = 'Neutral',
   confirmText = 'Confirm',
   cancelText = 'Cancel',
   onConfirm = () => {},
@@ -27,6 +28,29 @@ export default function GlassmorphicLiquidModal({
   const contentRef = useRef(null);
   const animationTimelineRef = useRef(null);
   const { settings } = useWorkspace();
+
+  const toneStyles = {
+    Neutral: {
+      accent: 'rgba(52, 211, 255, 0.95)',
+      accentSoft: 'rgba(52, 211, 255, 0.22)',
+      button: 'rgba(52, 211, 255, 0.15)',
+      buttonBorder: 'rgba(52, 211, 255, 0.3)',
+    },
+    Warning: {
+      accent: 'rgba(251, 191, 36, 0.95)',
+      accentSoft: 'rgba(251, 191, 36, 0.22)',
+      button: 'rgba(251, 191, 36, 0.16)',
+      buttonBorder: 'rgba(251, 191, 36, 0.34)',
+    },
+    Critical: {
+      accent: 'rgba(255, 77, 109, 0.95)',
+      accentSoft: 'rgba(255, 77, 109, 0.22)',
+      button: 'rgba(255, 77, 109, 0.16)',
+      buttonBorder: 'rgba(255, 77, 109, 0.34)',
+    },
+  };
+
+  const activeTone = toneStyles[tone] ?? toneStyles.Neutral;
 
   // Map viscosity to easing curve (same as Liquid Toast)
   const getEasingCurve = () => {
@@ -101,9 +125,9 @@ export default function GlassmorphicLiquidModal({
           ref={contentRef}
           className="glassmorphic-liquid-modal"
           style={{
-            '--glow-rim': settings?.glowRim || 'rgba(52, 211, 255, 0.25)',
-            '--glow-aura': settings?.glowAura || 'rgba(60, 255, 143, 0.2)',
-            '--glow-accent': settings?.glowAccent || 'rgba(255, 77, 109, 0.2)',
+            '--glow-rim': settings?.glowRim || activeTone.accentSoft,
+            '--glow-aura': settings?.glowAura || activeTone.accentSoft,
+            '--glow-accent': settings?.glowAccent || activeTone.accent,
             '--modal-blur': settings?.blur || '16px',
           }}
         >
@@ -147,6 +171,12 @@ export default function GlassmorphicLiquidModal({
                 onClose();
               }}
               className="glassmorphic-liquid-modal-btn confirm"
+              style={{
+                background: activeTone.button,
+                borderColor: activeTone.buttonBorder,
+                color: activeTone.accent,
+                boxShadow: `0 0 20px ${activeTone.accentSoft}`,
+              }}
             >
               {confirmText}
             </button>
