@@ -1,0 +1,10 @@
+{
+  "id": "radial-shockwave",
+  "name": "Expanding Radial Shockwave",
+  "category": "toast",
+  "description": "Neon droplet impact that drops, lands, and morphs into a readable glass notification plate.",
+  "settingsConfig": [
+    { "id": "message", "label": "Toast Message", "type": "text", "default": "Shockwave event registered" },
+    { "id": "speed", "label": "Impact Speed", "type": "slider", "min": 0.35, "max": 2.5, "step": 0.05, "default": 1 }
+  ]
+}
