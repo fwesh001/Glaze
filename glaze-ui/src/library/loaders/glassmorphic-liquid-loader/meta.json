@@ -4,6 +4,7 @@
   "category": "loader",
   "description": "A luminous rotating loader with glassmorphic depth and liquid glow.",
   "directoryPath": "/library/loaders/glassmorphic-liquid-loader",
+  "aliases": ["glassmorphic-pulse-loader"],
   "settingsConfig": [
     { "id": "speed", "label": "Spin Speed", "type": "slider", "min": 0.2, "max": 3, "default": 1 },
     { "id": "size", "label": "Loader Size", "type": "slider", "min": 48, "max": 220, "default": 112 },
