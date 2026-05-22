@@ -35,7 +35,7 @@ export default function DashboardWorkspace() {
   }, [activeCategory, query]);
 
   return (
-    <main className="min-h-screen bg-black px-6 py-6 text-white">
+    <main data-glaze-root className="min-h-screen bg-black px-6 py-6 text-white">
       <section className="mx-auto flex max-w-7xl flex-col gap-6">
         <header className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/[0.03] px-6 py-5 shadow-glass backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
           <div>
