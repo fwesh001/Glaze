@@ -1,0 +1,13 @@
+/* Vector Bezier Wave Loader Styles */
+
+.bezier-wave-container {
+  perspective: 1000px;
+}
+
+.bezier-wave-svg {
+  filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.3));
+}
+
+.wave-grid {
+  opacity: 0.15;
+}
