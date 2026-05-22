@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { Activity, RefreshCw } from 'lucide-react';
 
 import LiquidToast from '../library/toasts/liquid-toast/index.jsx';
+import GlassmorphicLiquidModal from '../library/modals/glassmorphic-liquid-modal/index.jsx';
 import { useWorkspace } from './WorkspaceProvider.jsx';
 
 export default function MercuryChamber() {
@@ -112,11 +113,27 @@ export default function MercuryChamber() {
         <div className="relative flex w-full max-w-2xl flex-col gap-4">
           {registryItem?.category === 'toast' && overclockNodes.length === 0 ? (
             <LiquidToast stackIndex={0} />
-          ) : registryItem?.category !== 'toast' ? (
+          ) : registryItem?.category === 'modal' ? (
+            <GlassmorphicLiquidModal
+              isOpen={true}
+              isEmbedded={true}
+              title={registryItem?.settings?.title ?? 'Confirm action'}
+              message={registryItem?.settings?.message ?? 'Are you sure?'}
+              onConfirm={() => {
+                /* noop for preview - user can wire actions in workspace */
+              }}
+              onCancel={() => {}}
+              onClose={() => {}}
+            />
+          ) : registryItem ? (
+            <div className="rounded-[2rem] border border-white/10 bg-black/40 p-8 text-sm text-zinc-400">
+              No preview available for this component.
+            </div>
+          ) : (
             <div className="rounded-[2rem] border border-white/10 bg-black/40 p-8 text-sm text-zinc-400">
               No component selected.
             </div>
-          ) : null}
+          )}
         </div>
 
         <div className="absolute bottom-4 right-4 flex items-center gap-3">
