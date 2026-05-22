@@ -1,0 +1,17 @@
+{
+  "id": "binary-stream",
+  "name": "Binary Data Stream",
+  "category": "loader",
+  "description": "High-frequency 1s and 0s cascading through a frosted glass buffer with progressive row locking and neon CRT glow.",
+  "settingsConfig": [
+    {
+      "id": "speed",
+      "label": "Buffer Velocity",
+      "type": "slider",
+      "min": 0.35,
+      "max": 2.5,
+      "step": 0.05,
+      "default": 1
+    }
+  ]
+}
