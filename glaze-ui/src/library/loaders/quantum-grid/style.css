@@ -1,0 +1,22 @@
+/* Quantum Grid Orbit Loader Styles */
+
+.quantum-grid-container {
+  perspective: 1000px;
+}
+
+.quantum-grid-nucleus {
+  animation: nucleus-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes nucleus-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.9));
+  }
+}
+
+.quantum-dot {
+  will-change: transform, opacity;
+}
