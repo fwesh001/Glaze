@@ -21,29 +21,39 @@ export default function GlassmorphicLiquidLoader({
   const ringRef = useRef(null);
   const { settings } = useWorkspace();
 
+  const spinSpeed = Math.max(0.2, Number(speed) || 1);
+  const loaderSize = Math.max(48, Number(size) || 112);
+  const spinDuration = 2.4 / spinSpeed;
+  const ringDuration = 3.4 / spinSpeed;
+  const pulseDuration = Math.max(0.8, 1.5 / spinSpeed);
+  const haloDuration = Math.max(1, 2 / spinSpeed);
+  const dotDuration = Math.max(0.6, 1 / spinSpeed);
+
   useEffect(() => {
     if (!loaderRef.current) return undefined;
 
-    const timeline = gsap.timeline({ repeat: -1, defaults: { ease: 'none' } });
-
-    timeline.to(orbRef.current, {
+    const orbitTween = gsap.to(orbRef.current, {
       rotate: 360,
-      duration: 2.4 / speed,
+      duration: spinDuration,
+      repeat: -1,
+      ease: 'none',
+      overwrite: 'auto',
     });
 
-    timeline.to(
-      ringRef.current,
-      {
-        rotate: -360,
-        duration: 3.4 / speed,
-      },
-      0
-    );
+    const ringTween = gsap.to(ringRef.current, {
+      rotate: -360,
+      duration: ringDuration,
+      repeat: -1,
+      ease: 'none',
+      overwrite: 'auto',
+    });
 
     return () => {
-      timeline.kill();
+      orbitTween.kill();
+      ringTween.kill();
+      gsap.killTweensOf([orbRef.current, ringRef.current]);
     };
-  }, [speed]);
+  }, [spinDuration, ringDuration]);
 
   if (!isOpen) return null;
 
@@ -55,10 +65,13 @@ export default function GlassmorphicLiquidLoader({
         ref={loaderRef}
         className="glassmorphic-liquid-loader"
         style={{
-          width: `${size}px`,
-          height: `${size}px`,
-          '--loader-size': `${size}px`,
+          width: `${loaderSize}px`,
+          height: `${loaderSize}px`,
+          '--loader-size': `${loaderSize}px`,
           '--loader-blur': settings?.blur || '16px',
+          '--loader-pulse-duration': `${pulseDuration}s`,
+          '--loader-halo-duration': `${haloDuration}s`,
+          '--loader-dot-duration': `${dotDuration}s`,
         }}
       >
         {!isEmbedded ? (
