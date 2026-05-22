@@ -20,6 +20,7 @@ export default function GlassmorphicLiquidModal({
   onCancel = () => {},
   viscosity = 1.2,
   entranceDelay = 0,
+  isEmbedded = false,
 }) {
   const modalRef = useRef(null);
   const backdropRef = useRef(null);
@@ -84,11 +85,14 @@ export default function GlassmorphicLiquidModal({
 
   if (!isOpen) return null;
 
+  const containerClass = `glassmorphic-liquid-modal-container ${isEmbedded ? 'embedded' : ''}`;
+  const backdropClass = `glassmorphic-liquid-modal-backdrop ${isEmbedded ? 'embedded' : ''}`;
+
   return (
-    <div className="glassmorphic-liquid-modal-container">
+    <div className={containerClass}>
       <div
         ref={backdropRef}
-        className="glassmorphic-liquid-modal-backdrop"
+        className={backdropClass}
         onClick={onClose}
       />
 
