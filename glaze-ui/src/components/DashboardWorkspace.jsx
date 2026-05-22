@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { getRegistryEntriesByCategory, registryCatalog } from '../registry/index.js';
 import DashboardGrid from './DashboardGrid.jsx';
@@ -15,6 +16,7 @@ const tabs = [
 ];
 
 export default function DashboardWorkspace() {
+  const router = useRouter();
   const [activeCategory, setActiveCategory] = useState('all');
   const [query, setQuery] = useState('');
 
@@ -86,7 +88,7 @@ export default function DashboardWorkspace() {
           <span className="uppercase tracking-[0.35em] text-cyan-300/80">Phase 2</span>
         </div>
 
-        <DashboardGrid items={filteredItems} />
+        <DashboardGrid items={filteredItems} onSelect={(item) => router.push(`/component/${item.id}`)} />
       </section>
     </main>
   );
