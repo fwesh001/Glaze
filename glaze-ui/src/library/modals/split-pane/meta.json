@@ -1,0 +1,11 @@
+{
+  "id": "split-pane",
+  "name": "Kinetic Split-Pane Matrix",
+  "category": "modal",
+  "description": "Centerline splits into equal utility columns that slide apart like kinetic security doors.",
+  "settingsConfig": [
+    { "id": "title", "label": "Modal Title", "type": "text", "default": "Split Matrix" },
+    { "id": "message", "label": "Body Message", "type": "text", "default": "Panels deployed. Adjust matrix parameters before commit." },
+    { "id": "speed", "label": "Split Speed", "type": "slider", "min": 0.35, "max": 2.5, "step": 0.05, "default": 1 }
+  ]
+}
