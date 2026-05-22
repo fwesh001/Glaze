@@ -1,0 +1,15 @@
+.telemetry-ticker {
+  width: min(38rem, 94vw);
+  border-radius: 0.85rem;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(170deg, rgba(2, 14, 12, 0.95), rgba(2, 8, 10, 0.98));
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55);
+}
+.telemetry-line {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.76rem;
+  line-height: 1.25rem;
+  letter-spacing: 0.08em;
+  color: #34d399;
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.45);
+}
