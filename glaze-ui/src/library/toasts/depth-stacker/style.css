@@ -1,0 +1,18 @@
+.depth-stacker-scene {
+  width: min(36rem, 92vw);
+  height: 18rem;
+  perspective: 1000px;
+  position: relative;
+}
+.depth-stacker-item {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(28rem, 82vw);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(130deg, rgba(14, 24, 44, 0.8), rgba(6, 12, 24, 0.92));
+  transform-style: preserve-3d;
+  backdrop-filter: blur(var(--stack-blur, 10px));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
