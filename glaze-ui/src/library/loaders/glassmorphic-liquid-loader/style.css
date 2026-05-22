@@ -90,7 +90,7 @@
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(52, 211, 255, 0.35), rgba(60, 255, 143, 0.22));
   box-shadow: 0 0 18px rgba(52, 211, 255, 0.25);
-  animation: liquid-pulse 1.5s ease-in-out infinite;
+  animation: liquid-pulse var(--loader-pulse-duration, 1.5s) ease-in-out infinite;
 }
 
 .glassmorphic-liquid-loader-ring {
@@ -105,7 +105,7 @@
   inset: 0;
   border: 1px solid rgba(255, 255, 255, 0.06);
   background: radial-gradient(circle, rgba(52, 211, 255, 0.08), transparent 65%);
-  animation: halo-breathe 2s ease-in-out infinite;
+  animation: halo-breathe var(--loader-halo-duration, 2s) ease-in-out infinite;
 }
 
 .glassmorphic-liquid-loader-label {
@@ -138,7 +138,7 @@
   border-radius: 999px;
   background: rgba(52, 211, 255, 0.95);
   box-shadow: 0 0 10px rgba(52, 211, 255, 0.6);
-  animation: dot-bounce 1s ease-in-out infinite;
+  animation: dot-bounce var(--loader-dot-duration, 1s) ease-in-out infinite;
 }
 
 .glassmorphic-liquid-loader-dots i:nth-child(2) {
