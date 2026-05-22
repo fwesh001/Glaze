@@ -1,6 +1,7 @@
 import { loaderRegistry, loaderRegistryMap } from './loaders.js';
 import { modalRegistry, modalRegistryMap } from './modals.js';
 import { toastRegistry, toastRegistryMap } from './toasts.js';
+import { registryAliases } from './aliases.js';
 
 export const componentRegistries = {
   toast: toastRegistry,
@@ -27,7 +28,14 @@ export function getRegistryEntriesByCategory(category = 'all') {
 }
 
 export function getRegistryEntryById(id) {
-  return registryIndex.get(id) ?? null;
+  const direct = registryIndex.get(id);
+  if (direct) return direct;
+
+  // Fallback to aliases mapping (legacy ids -> current id)
+  const mapped = registryAliases?.[id];
+  if (mapped) return registryIndex.get(mapped) ?? null;
+
+  return null;
 }
 
 export function getRegistryCounts() {
