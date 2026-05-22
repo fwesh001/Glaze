@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 
 import gsap from 'gsap';
-import { CheckCircle2, AlertTriangle, Sparkles } from 'lucide-react';
+// Inline SVG icons used to avoid SSR/client hydration mismatches
 
 import { useWorkspace } from '../../../components/WorkspaceProvider.jsx';
 
@@ -38,15 +38,34 @@ function resolveEase(viscosity) {
 }
 
 function getStatusIcon(glow) {
+  const commonProps = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', xmlns: 'http://www.w3.org/2000/svg', 'aria-hidden': true };
+
   if (glow === 'Error Red') {
-    return <AlertTriangle size={16} />;
+    return (
+      <svg {...commonProps}>
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h17.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 9v4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 17h.01" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
   }
 
   if (glow === 'Neon Cyan') {
-    return <Sparkles size={16} />;
+    return (
+      <svg {...commonProps}>
+        <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z" fill="currentColor" />
+        <path d="M5 19l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M19 5l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
   }
 
-  return <CheckCircle2 size={16} />;
+  return (
+    <svg {...commonProps}>
+      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9.5 12.5l1.8 1.8L15 10.6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
 }
 
 export default function LiquidToast({
