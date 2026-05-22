@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "generate:registry": "node scripts/generate-registry.cjs",
+    "prebuild": "npm run generate:registry",
     "build": "next build",
     "start": "next start",
     "registry:smoke": "node scripts/registry-smoke.mjs"
