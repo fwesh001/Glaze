@@ -1,4 +1,5 @@
 import './globals.css';
+import '../library/toasts/liquid-toast/style.css';
 
 export const metadata = {
   title: 'Glaze UI',
