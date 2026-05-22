@@ -7,6 +7,12 @@ import { Activity, RefreshCw } from 'lucide-react';
 
 import LiquidToast from '../library/toasts/liquid-toast/index.jsx';
 import PaperReceiptToast from '../library/toasts/paper-receipt-toast/index.jsx';
+import CountdownCapsuleToast from '../library/toasts/countdown-capsule/index.jsx';
+import DepthStackerToast from '../library/toasts/depth-stacker/index.jsx';
+import ParticleShatterToast from '../library/toasts/particle-shatter/index.jsx';
+import RadialShockwaveToast from '../library/toasts/radial-shockwave/index.jsx';
+import TelemetryTickerToast from '../library/toasts/telemetry-ticker/index.jsx';
+import EdgeSnapperToast from '../library/toasts/edge-snapper/index.jsx';
 import GlassmorphicLiquidModal from '../library/modals/glassmorphic-liquid-modal/index.jsx';
 import PaperOrigamiModal from '../library/modals/paper-origami-modal/index.jsx';
 import DecryptionBreachModal from '../library/modals/decryption-breach/index.jsx';
@@ -24,6 +30,87 @@ import FibonacciSpiralLoader from '../library/loaders/fibonacci-spiral/index.jsx
 import MemoryBlocksLoader from '../library/loaders/memory-blocks/index.jsx';
 import MercurySpillLoader from '../library/loaders/mercury-spill/index.jsx';
 import { useWorkspace } from './WorkspaceProvider.jsx';
+
+function ToastPreview({ registryItem, settings, previewKey }) {
+  switch (registryItem?.id) {
+    case 'paper-receipt-toast':
+      return (
+        <div key={previewKey} className="flex h-full items-center justify-center">
+          <PaperReceiptToast
+            message={settings?.message ?? 'Payment received'}
+            tone={settings?.tone ?? 'Kraft'}
+            speed={settings?.speed ?? 1}
+            depth={settings?.depth ?? 14}
+          />
+        </div>
+      );
+    case 'countdown-capsule':
+      return (
+        <div key={previewKey} className="flex h-full items-center justify-center">
+          <CountdownCapsuleToast
+            message={settings?.message ?? 'Telemetry uplink active'}
+            timer={settings?.timer ?? 4}
+            speed={settings?.speed ?? 1}
+            onAutoClose={() => {}}
+          />
+        </div>
+      );
+    case 'depth-stacker':
+      return (
+        <div key={previewKey} className="flex h-full items-center justify-center">
+          <DepthStackerToast
+            message={settings?.message ?? 'Depth focus lock acquired'}
+            stack={settings?.stack ?? 4}
+            speed={settings?.speed ?? 1}
+          />
+        </div>
+      );
+    case 'particle-shatter':
+      return (
+        <div key={previewKey} className="flex h-full items-center justify-center">
+          <ParticleShatterToast
+            message={settings?.message ?? 'Container integrity compromised'}
+            speed={settings?.speed ?? 1}
+          />
+        </div>
+      );
+    case 'radial-shockwave':
+      return (
+        <div key={previewKey} className="flex h-full items-center justify-center">
+          <RadialShockwaveToast
+            message={settings?.message ?? 'Shockwave event registered'}
+            speed={settings?.speed ?? 1}
+          />
+        </div>
+      );
+    case 'telemetry-ticker':
+      return (
+        <div key={previewKey} className="flex h-full items-center justify-center">
+          <TelemetryTickerToast
+            message={settings?.message ?? 'Diagnostic bus synchronized'}
+            lines={settings?.lines ?? 4}
+            speed={settings?.speed ?? 1}
+          />
+        </div>
+      );
+    case 'edge-snapper':
+      return (
+        <div key={previewKey} className="flex h-full items-center justify-center">
+          <EdgeSnapperToast
+            message={settings?.message ?? 'Boundary magnet active'}
+            snapThreshold={settings?.snapThreshold ?? 70}
+            speed={settings?.speed ?? 1}
+          />
+        </div>
+      );
+    default:
+      return (
+        <div key={previewKey} className="flex h-full items-center justify-center">
+          <LiquidToast stackIndex={0} />
+        </div>
+      );
+  }
+}
 
 function ModalPreview({ registryItem, settings, previewKey }) {
   const commonModalProps = {
@@ -180,7 +267,6 @@ export default function MercuryChamber() {
   const { registryItem, settings, animationTick, resetAnimation } = useWorkspace();
 
   const hasToastPreview = registryItem?.category === 'toast';
-  const isPaperToast = registryItem?.id === 'paper-receipt-toast';
   const previewKey = `${registryItem?.id ?? 'none'}:${animationTick}`;
 
   const createOverclockNodes = () => {
@@ -277,20 +363,7 @@ export default function MercuryChamber() {
 
         <div className="relative flex h-full w-full max-w-2xl flex-col gap-4">
           {registryItem?.category === 'toast' && overclockNodes.length === 0 ? (
-            isPaperToast ? (
-              <div key={previewKey} className="flex h-full items-center justify-center">
-                <PaperReceiptToast
-                  message={settings?.message ?? 'Payment received'}
-                  tone={settings?.tone ?? 'Kraft'}
-                  speed={settings?.speed ?? 1}
-                  depth={settings?.depth ?? 14}
-                />
-              </div>
-            ) : (
-              <div key={previewKey} className="flex h-full items-center justify-center">
-                <LiquidToast stackIndex={0} />
-              </div>
-            )
+            <ToastPreview registryItem={registryItem} settings={settings} previewKey={previewKey} />
           ) : registryItem?.category === 'modal' ? (
             <ModalPreview registryItem={registryItem} settings={settings} previewKey={previewKey} />
           ) : registryItem?.category === 'loader' ? (
