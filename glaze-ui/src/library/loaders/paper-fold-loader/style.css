@@ -1,0 +1,100 @@
+.paper-fold-loader-shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 60;
+}
+
+.paper-fold-loader-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 244, 220, 0.08), transparent 24%),
+    rgba(45, 34, 20, 0.42);
+  backdrop-filter: blur(6px);
+}
+
+.paper-fold-loader {
+  position: relative;
+  width: min(92vw, 24rem);
+  height: 18rem;
+  display: grid;
+  place-items: center;
+}
+
+.paper-fold-loader-sheet {
+  position: absolute;
+  width: 12rem;
+  height: 16rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--paper-sheet) 0%, rgba(255,255,255,0.82) 100%);
+  border: 1px solid rgba(90, 66, 40, 0.14);
+  box-shadow:
+    0 18px 30px rgba(60, 44, 24, 0.18),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+  transform-origin: center 40%;
+}
+
+.paper-fold-loader-sheet::before,
+.paper-fold-loader-sheet::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.paper-fold-loader-sheet::before {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.32), transparent 28%),
+    repeating-linear-gradient(180deg, rgba(86, 63, 38, 0.03) 0 1px, transparent 1px 14px);
+}
+
+.paper-fold-loader-sheet::after {
+  background: linear-gradient(90deg, transparent 49.6%, var(--paper-crease) 50%, transparent 50.4%);
+}
+
+.paper-fold-loader-fold {
+  position: absolute;
+  width: 6.4rem;
+  height: 12.8rem;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(235, 217, 182, 0.9));
+  border: 1px solid rgba(90, 66, 40, 0.14);
+  box-shadow: 0 14px 24px rgba(60, 44, 24, 0.12);
+  opacity: 0;
+  transform-origin: center bottom;
+}
+
+.paper-fold-loader-shadow {
+  position: absolute;
+  width: 12.8rem;
+  height: 2rem;
+  bottom: 2rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(60, 44, 24, 0.26), transparent 72%);
+  filter: blur(6px);
+  opacity: 0.8;
+}
+
+.paper-fold-loader-label {
+  position: absolute;
+  bottom: 0;
+  text-align: center;
+  color: var(--paper-ink);
+}
+
+.paper-fold-loader-title {
+  display: block;
+  font-size: 0.92rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.paper-fold-loader-subtitle {
+  display: block;
+  margin-top: 0.45rem;
+  font-size: 0.75rem;
+  color: rgba(73, 54, 36, 0.68);
+}
