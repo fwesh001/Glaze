@@ -15,7 +15,7 @@ export default function MercuryChamber() {
   const glowRef = useRef(null);
   const overclockTimerRef = useRef(null);
   const [overclockNodes, setOverclockNodes] = useState([]);
-  const { registryItem, animationTick, resetAnimation } = useWorkspace();
+  const { registryItem, settings, animationTick, resetAnimation } = useWorkspace();
 
   const hasToastPreview = registryItem?.category === 'toast';
 
@@ -118,8 +118,9 @@ export default function MercuryChamber() {
             <GlassmorphicLiquidModal
               isOpen={true}
               isEmbedded={true}
-              title={registryItem?.settings?.title ?? 'Confirm action'}
-              message={registryItem?.settings?.message ?? 'Are you sure?'}
+              title={settings?.title ?? 'Confirm action'}
+              message={settings?.message ?? 'Are you sure?'}
+              tone={settings?.tone ?? 'Neutral'}
               onConfirm={() => {
                 /* noop for preview - user can wire actions in workspace */
               }}
@@ -130,9 +131,9 @@ export default function MercuryChamber() {
             <GlassmorphicLiquidLoader
               isOpen={true}
               isEmbedded={true}
-              message={registryItem?.settings?.message ?? 'Loading your experience'}
-              size={registryItem?.settings?.size ?? 112}
-              speed={registryItem?.settings?.speed ?? 1}
+              message={settings?.message ?? 'Loading your experience'}
+              size={settings?.size ?? 112}
+              speed={settings?.speed ?? 1}
             />
           ) : registryItem ? (
             <div className="rounded-[2rem] border border-white/10 bg-black/40 p-8 text-sm text-zinc-400">
