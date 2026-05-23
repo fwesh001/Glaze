@@ -39,7 +39,19 @@ function scrambleCode(source) {
 export default function ControlPanel() {
   const [activeTab, setActiveTab] = useState('settings');
   const [isMorphing, setIsMorphing] = useState(false);
-  const { registryItem, settings, setSetting, language, setLanguage, prompt, setPrompt, displayCode, setDisplayCode } = useWorkspace();
+  const {
+    registryItem,
+    settings,
+    setSetting,
+    language,
+    setLanguage,
+    prompt,
+    setPrompt,
+    displayCode,
+    setDisplayCode,
+    setCompilerLoading,
+    showCompilerToast,
+  } = useWorkspace();
   const codePaneRef = useRef(null);
   const morphTimersRef = useRef([]);
 
@@ -76,14 +88,18 @@ export default function ControlPanel() {
       morphTimersRef.current = [];
 
       setIsMorphing(true);
+      setCompilerLoading(true);
 
       try {
         const response = await requestMorphCode(serializedPayload);
+
+        if (!response?.success || !response.code) {
+          throw new Error(response?.error ?? 'Empty response from compiler service.');
+        }
+
         const nextCode = response.code;
 
-        if (!nextCode) {
-          return;
-        }
+        showCompilerToast('Compiler morph complete.', 'success');
 
         const pane = codePaneRef.current;
 
@@ -106,9 +122,12 @@ export default function ControlPanel() {
         }, 220);
 
         morphTimersRef.current = [revealTimer, settleTimer];
-      } catch {
+      } catch (error) {
+        showCompilerToast(`Compiler morph failed. ${error?.message ?? 'Using local fallback.'}`, 'error');
         setDisplayCode(buildMorphCode(serializedPayload));
         setIsMorphing(false);
+      } finally {
+        setCompilerLoading(false);
       }
     };
 
@@ -120,7 +139,7 @@ export default function ControlPanel() {
       window.clearTimeout(debounceTimer);
       morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
     };
-  }, [serializedPayload]);
+  }, [serializedPayload, setCompilerLoading, showCompilerToast]);
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-glass">
