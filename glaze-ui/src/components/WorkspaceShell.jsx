@@ -1,11 +1,59 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
+import { AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 
 import ControlPanel from './ControlPanel.jsx';
 import MercuryChamber from './MercuryChamber.jsx';
 import Sidebar from './Sidebar.jsx';
-import { WorkspaceProvider } from './WorkspaceProvider.jsx';
+import GlazeLoader from './ui/GlazeLoader.jsx';
+import GlazeSiteToast from './ui/GlazeSiteToast.jsx';
+import { WorkspaceProvider, useWorkspace } from './WorkspaceProvider.jsx';
+
+function CompilerOverlay() {
+  const { compilerBusy } = useWorkspace();
+
+  if (!compilerBusy) {
+    return null;
+  }
+
+  return (
+    <div className="pointer-events-auto fixed inset-0 z-[9998] flex items-center justify-center bg-black/45 backdrop-blur-sm">
+      <GlazeLoader />
+    </div>
+  );
+}
+
+function CompilerToastHost() {
+  const { compilerToast, clearCompilerToast } = useWorkspace();
+
+  useEffect(() => {
+    if (!compilerToast) {
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => {
+      clearCompilerToast();
+    }, 3200);
+
+    return () => window.clearTimeout(timer);
+  }, [clearCompilerToast, compilerToast]);
+
+  if (!compilerToast) {
+    return null;
+  }
+
+  const iconMap = {
+    success: CheckCircle2,
+    error: AlertTriangle,
+    info: Info,
+  };
+
+  const Icon = iconMap[compilerToast.tone] ?? Info;
+
+  return <GlazeSiteToast message={compilerToast.message} icon={Icon} onDismiss={clearCompilerToast} />;
+}
 
 export default function WorkspaceShell({ registryItem }) {
   return (
@@ -34,6 +82,9 @@ export default function WorkspaceShell({ registryItem }) {
             <ControlPanel />
           </div>
         </div>
+
+        <CompilerOverlay />
+        <CompilerToastHost />
       </main>
     </WorkspaceProvider>
   );
