@@ -4,9 +4,11 @@ import { HfInference } from '@huggingface/inference';
 // Server route that forwards component/code morph requests to Hugging Face
 // Expects `HF_TOKEN` in environment variables.
 
-const SYSTEM_PROMPT = `You are the Glaze UI production code compiler. Your task is to translate the provided baseline component snippet into clean, working code for the requested Target Framework (React, Vue, or Vanilla JS) styled with Tailwind CSS utility parameters.
-
-CRITICAL FORMATTING RULE: You must output ONLY the raw, clean, functional code string. Do NOT enclose the response in markdown code blocks (such as ```jsx ... ```). Do NOT include conversational greetings, explanations, or footnotes. Start immediately with the code payload.`;
+const SYSTEM_PROMPT = [
+  'You are the Glaze UI production code compiler. Your task is to translate the provided baseline component snippet into clean, working code for the requested Target Framework (React, Vue, or Vanilla JS) styled with Tailwind CSS utility parameters.',
+  '',
+  'CRITICAL FORMATTING RULE: You must output ONLY the raw, clean, functional code string. Do NOT enclose the response in markdown code blocks (such as ```jsx ... ```). Do NOT include conversational greetings, explanations, or footnotes. Start immediately with the code payload.',
+].join('\n');
 
 export async function POST(req) {
   try {
