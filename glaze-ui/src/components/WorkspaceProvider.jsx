@@ -22,6 +22,14 @@ function buildDefaultWorkspace(registryItem) {
   };
 }
 
+function createToastEntry(message, tone = 'info') {
+  return {
+    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    message,
+    tone,
+  };
+}
+
 function getStorageKey(registryItem) {
   return registryItem?.id ? `${STORAGE_PREFIX}${registryItem.id}` : null;
 }
@@ -63,6 +71,8 @@ function readPersistedWorkspace(registryItem) {
 
 export function WorkspaceProvider({ registryItem, children }) {
   const [workspaceState, setWorkspaceState] = useState(() => readPersistedWorkspace(registryItem));
+  const [compilerBusy, setCompilerBusy] = useState(false);
+  const [compilerToast, setCompilerToast] = useState(null);
   const registryId = registryItem?.id;
 
   useEffect(() => {
@@ -110,6 +120,20 @@ export function WorkspaceProvider({ registryItem, children }) {
     }));
   }, []);
 
+  const setCompilerLoading = useCallback((nextBusy) => {
+    setCompilerBusy(Boolean(nextBusy));
+  }, []);
+
+  const showCompilerToast = useCallback((message, tone = 'info') => {
+    const entry = createToastEntry(message, tone);
+    setCompilerToast(entry);
+    return entry.id;
+  }, []);
+
+  const clearCompilerToast = useCallback(() => {
+    setCompilerToast(null);
+  }, []);
+
   const value = useMemo(
     () => ({
       registryItem,
@@ -118,13 +142,31 @@ export function WorkspaceProvider({ registryItem, children }) {
       prompt: workspaceState.prompt,
       displayCode: workspaceState.displayCode,
       animationTick: workspaceState.animationTick,
+      compilerBusy,
+      compilerToast,
       setSetting,
       setLanguage,
       setPrompt,
       setDisplayCode,
       resetAnimation,
+      setCompilerLoading,
+      showCompilerToast,
+      clearCompilerToast,
     }),
-    [registryItem, resetAnimation, setDisplayCode, setLanguage, setPrompt, setSetting, workspaceState],
+    [
+      clearCompilerToast,
+      compilerBusy,
+      compilerToast,
+      registryItem,
+      resetAnimation,
+      setCompilerLoading,
+      setDisplayCode,
+      setLanguage,
+      setPrompt,
+      setSetting,
+      showCompilerToast,
+      workspaceState,
+    ],
   );
 
   return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;
