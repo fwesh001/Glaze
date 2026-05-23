@@ -113,9 +113,12 @@ export async function requestMorphCode(payload) {
     body: JSON.stringify(payload),
   });
 
+  const data = await response.json().catch(() => null);
+
   if (!response.ok) {
-    throw new Error('Unable to morph code.');
+    const message = data?.error ?? 'Unable to morph code.';
+    throw new Error(message);
   }
 
-  return response.json();
+  return data;
 }
