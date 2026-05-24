@@ -7,23 +7,8 @@ import { AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import ControlPanel from './ControlPanel.jsx';
 import MercuryChamber from './MercuryChamber.jsx';
 import Sidebar from './Sidebar.jsx';
-import GlazeLoader from './ui/GlazeLoader.jsx';
 import GlazeSiteToast from './ui/GlazeSiteToast.jsx';
 import { WorkspaceProvider, useWorkspace } from './WorkspaceProvider.jsx';
-
-function CompilerOverlay() {
-  const { compilerBusy } = useWorkspace();
-
-  if (!compilerBusy) {
-    return null;
-  }
-
-  return (
-    <div className="pointer-events-auto fixed inset-0 z-[9998] flex items-center justify-center bg-black/45 backdrop-blur-sm">
-      <GlazeLoader />
-    </div>
-  );
-}
 
 function CompilerToastHost() {
   const { compilerToast, clearCompilerToast } = useWorkspace();
@@ -83,7 +68,6 @@ export default function WorkspaceShell({ registryItem }) {
           </div>
         </div>
 
-        <CompilerOverlay />
         <CompilerToastHost />
       </main>
     </WorkspaceProvider>
