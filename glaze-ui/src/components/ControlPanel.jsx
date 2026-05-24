@@ -78,17 +78,18 @@ export default function ControlPanel() {
 
   const syntaxLanguage = TARGET_LANGUAGE_MAP[language] ?? 'jsx';
 
+  // Initialize display code without triggering compile
   useEffect(() => {
     setDisplayCode(buildMorphCode(serializedPayload));
-  }, [serializedPayload]);
+  }, [serializedPayload, setDisplayCode]);
 
-  useEffect(() => {
-    const handleMorph = async () => {
-      morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
-      morphTimersRef.current = [];
+  // Manual morphing handler (not auto-triggered)
+  const handleMorph = async () => {
+    morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+    morphTimersRef.current = [];
 
-      setIsMorphing(true);
-      setCompilerLoading(true);
+    setIsMorphing(true);
+    setCompilerLoading(true);
 
       try {
         const response = await requestMorphCode(serializedPayload);
@@ -131,6 +132,16 @@ export default function ControlPanel() {
       }
     };
 
+  // Trigger compile when language changes in Code tab
+  useEffect(() => {
+    if (activeTab !== 'code') {
+      return undefined;
+    }
+
+    if (!language || language === 'Select language') {
+      return undefined;
+    }
+
     const debounceTimer = window.setTimeout(() => {
       void handleMorph();
     }, 220);
@@ -139,7 +150,7 @@ export default function ControlPanel() {
       window.clearTimeout(debounceTimer);
       morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
     };
-  }, [serializedPayload, setCompilerLoading, showCompilerToast]);
+  }, [language, activeTab, handleMorph, serializedPayload, setCompilerLoading, showCompilerToast]);
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-glass">
@@ -231,6 +242,7 @@ export default function ControlPanel() {
                   onChange={(event) => setLanguage(event.target.value)}
                   className="rounded-full border border-white/10 bg-black px-3 py-2 text-white outline-none"
                 >
+                  <option value="Select language">Select language</option>
                   <option>React (JSX)</option>
                   <option>Vue</option>
                   <option>Vanilla JS</option>
@@ -240,12 +252,24 @@ export default function ControlPanel() {
 
             <div
               ref={codePaneRef}
-              className="overflow-hidden rounded-3xl border border-white/10 bg-[#07070a] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_24px_80px_rgba(0,0,0,0.45)]"
+              className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#07070a] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_24px_80px_rgba(0,0,0,0.45)]"
             >
               <div className="flex items-center justify-between border-b border-white/5 px-4 py-3 text-[0.65rem] uppercase tracking-[0.4em] text-zinc-500">
                 <span>Syntax Visualizer</span>
                 <span className={isMorphing ? 'text-cyan-300/80' : 'text-zinc-500'}>{isMorphing ? 'Recompiling' : 'Stable'}</span>
               </div>
+
+              {isMorphing && (
+                <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+                  <div className="rounded-full border border-white/10 bg-gradient-to-br from-zinc-900/80 to-black/90 px-6 py-4 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                    <div className="flex items-center justify-center gap-2">
+                      {[0, 1, 2].map((i) => (
+                        <div key={i} className="h-2.5 w-2.5 rounded-full bg-cyan-400/80 shadow-[0_0_12px_rgba(34,211,238,0.5)] animate-pulse" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <SyntaxHighlighter
                 language={syntaxLanguage}
