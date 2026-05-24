@@ -126,7 +126,8 @@ export default function Sidebar({ registryItem }) {
               );
             })}
           </div>
-Link
+
+          <Link
             href="/synthesis"
             title={isAuthenticated ? 'Synthesis Engine' : 'Synthesis Engine (Locked)'}
             className="mt-4 flex items-center gap-3 rounded-2xl border border-white/5 bg-gradient-to-r from-cyan-500/10 to-purple-500/5 px-3 py-3 text-sm transition-colors hover:border-cyan-400/30 hover:bg-cyan-500/15"
@@ -141,7 +142,6 @@ Link
             <span className="min-w-0 flex-1 truncate">Synthesis</span>
           </Link>
 
-          <
           <label className="mt-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-zinc-400 focus-within:border-cyan-400/40">
             <Search size={15} className="shrink-0 text-zinc-500" />
             <input
