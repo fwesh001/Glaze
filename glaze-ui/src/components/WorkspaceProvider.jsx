@@ -15,7 +15,7 @@ function buildInitialState(settingsConfig = []) {
 function buildDefaultWorkspace(registryItem) {
   return {
     settings: buildInitialState(registryItem?.settingsConfig),
-    language: 'React (JSX)',
+    language: 'Select language',
     prompt: '',
     displayCode: '',
     animationTick: 0,
