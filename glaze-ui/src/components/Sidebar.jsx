@@ -4,8 +4,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Link from 'next/link';
 import gsap from 'gsap';
-import { ChevronsLeftRight, Menu, PanelLeft, Search } from 'lucide-react';
+import { ChevronsLeftRight, Lock, Menu, PanelLeft, Search, Sparkles } from 'lucide-react';
 
+import useMockSession from './auth/useMockSession';
 import { componentRegistries, getRegistryEntriesByCategory } from '../registry/index.js';
 
 const categoryTabs = [
@@ -21,6 +22,7 @@ export default function Sidebar({ registryItem }) {
   const [query, setQuery] = useState('');
   const asideRef = useRef(null);
   const labelRefs = useRef([]);
+  const { isAuthenticated } = useMockSession();
 
   labelRefs.current = [];
 
@@ -124,7 +126,22 @@ export default function Sidebar({ registryItem }) {
               );
             })}
           </div>
+Link
+            href="/synthesis"
+            title={isAuthenticated ? 'Synthesis Engine' : 'Synthesis Engine (Locked)'}
+            className="mt-4 flex items-center gap-3 rounded-2xl border border-white/5 bg-gradient-to-r from-cyan-500/10 to-purple-500/5 px-3 py-3 text-sm transition-colors hover:border-cyan-400/30 hover:bg-cyan-500/15"
+          >
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400/20 to-purple-400/10">
+              {isAuthenticated ? (
+                <Sparkles size={16} className="text-cyan-400" />
+              ) : (
+                <Lock size={16} className="text-zinc-500" />
+              )}
+            </div>
+            <span className="min-w-0 flex-1 truncate">Synthesis</span>
+          </Link>
 
+          <
           <label className="mt-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-zinc-400 focus-within:border-cyan-400/40">
             <Search size={15} className="shrink-0 text-zinc-500" />
             <input
@@ -189,6 +206,18 @@ export default function Sidebar({ registryItem }) {
               </button>
             );
           })}
+
+          <Link
+            href="/synthesis"
+            title={isAuthenticated ? 'Synthesis Engine' : 'Synthesis Engine (Locked)'}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/5 bg-gradient-to-br from-cyan-400/20 to-purple-400/10 transition-all hover:border-cyan-400/30 hover:bg-cyan-500/15"
+          >
+            {isAuthenticated ? (
+              <Sparkles size={16} className="text-cyan-400" />
+            ) : (
+              <Lock size={16} className="text-zinc-500" />
+            )}
+          </Link>
         </nav>
       )}
     </aside>
