@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import gsap from 'gsap';
+import { Copy } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -39,6 +40,7 @@ function scrambleCode(source) {
 export default function ControlPanel() {
   const [activeTab, setActiveTab] = useState('settings');
   const [isMorphing, setIsMorphing] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState(false);
   const {
     registryItem,
     settings,
@@ -54,6 +56,22 @@ export default function ControlPanel() {
   } = useWorkspace();
   const codePaneRef = useRef(null);
   const morphTimersRef = useRef([]);
+  const copyTimerRef = useRef(null);
+
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(displayCode);
+      setCopyFeedback(true);
+      if (copyTimerRef.current) {
+        window.clearTimeout(copyTimerRef.current);
+      }
+      copyTimerRef.current = window.setTimeout(() => {
+        setCopyFeedback(false);
+      }, 1800);
+    } catch (err) {
+      showCompilerToast('Failed to copy code.', 'error');
+    }
+  };
 
   const { textSettings, physicsSettings } = useMemo(() => {
     const settingsConfig = registryItem?.settingsConfig ?? [];
@@ -256,7 +274,21 @@ export default function ControlPanel() {
             >
               <div className="flex items-center justify-between border-b border-white/5 px-4 py-3 text-[0.65rem] uppercase tracking-[0.4em] text-zinc-500">
                 <span>Syntax Visualizer</span>
-                <span className={isMorphing ? 'text-cyan-300/80' : 'text-zinc-500'}>{isMorphing ? 'Recompiling' : 'Stable'}</span>
+                <div className="flex items-center gap-3">
+                  <span className={isMorphing ? 'text-cyan-300/80' : 'text-zinc-500'}>{isMorphing ? 'Recompiling' : 'Stable'}</span>
+                  <button
+                    type="button"
+                    onClick={handleCopyCode}
+                    title="Copy code to clipboard"
+                    className={`transition-all ${
+                      copyFeedback
+                        ? 'text-emerald-400'
+                        : 'text-zinc-500 hover:text-white'
+                    }`}
+                  >
+                    <Copy size={14} />
+                  </button>
+                </div>
               </div>
 
               {isMorphing && (
