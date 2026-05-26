@@ -109,7 +109,7 @@ function IframeRunner({ code, physics }) {
   if (!srcDoc) {
     return (
       <div className="p-4 text-center text-xs text-zinc-400">
-        Waiting for a valid component declaration (e.g. 'function Component() { ... }').
+        {"Waiting for a valid component declaration (e.g. 'function Component() { ... }')."}
       </div>
     );
   }
