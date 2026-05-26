@@ -10,45 +10,69 @@ export default function SynthesisPage() {
   const { isAuthenticated } = useMockSession();
   const [submittedInput, setSubmittedInput] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [streamingCode, setStreamingCode] = useState('');
+  const [finalizedCode, setFinalizedCode] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [physicsState, setPhysicsState] = useState({
+    viscosity: 1,
+    blur: 20,
+    mass: 1,
+  });
   const [error, setError] = useState(null);
 
-  const handleOmniInputSubmit = async (data) => {
-    setIsProcessing(true);
-    setError(null);
+  const handlePhysicsChange = (key, value) => {
+    setPhysicsState((prev) => ({ ...prev, [key]: value }));
+  };
 
-    const isFirstSubmit = !submittedInput;
-    
-    // Immediately transition to the workspace view with their input code/prompt
-    if (isFirstSubmit) {
-      setSubmittedInput({
-        ...data,
-        code: data.text,
-      });
-    }
+  const streamCodeTokens = (nextCode) =>
+    new Promise((resolve) => {
+      const tokenParts = nextCode.split(/(\s+)/).filter((part) => part.length > 0);
 
-    try {
-      const payload = {
-        targetLanguage: 'React',
-      };
-
-      if (isFirstSubmit) {
-        if (data.type === 'code') {
-          payload.sourceCode = data.text;
-        } else {
-          payload.message = data.text;
-        }
-      } else {
-        // Refinement Loop: Send previous generated code and new prompt/changes instruction
-        payload.sourceCode = submittedInput.code;
-        payload.message = data.text;
+      if (tokenParts.length === 0) {
+        setStreamingCode('');
+        resolve();
+        return;
       }
 
+      let index = 0;
+      let accumulated = '';
+
+      const interval = window.setInterval(() => {
+        accumulated += tokenParts[index] ?? '';
+        setStreamingCode(accumulated);
+        index += 1;
+
+        if (index >= tokenParts.length) {
+          window.clearInterval(interval);
+          resolve();
+        }
+      }, 10);
+    });
+
+  const runSynthesisTurn = async ({ userMessage, seedCode, mode }) => {
+    setIsProcessing(true);
+    setIsStreaming(true);
+    setError(null);
+
+    const userEntry = { role: 'user', content: userMessage };
+    setMessages((prev) => [...prev, userEntry]);
+
+    try {
       const response = await fetch('/api/morph', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          targetLanguage: 'React',
+          currentCode: seedCode,
+          sliderMetadata: physicsState,
+          userMessage,
+          sourceCode: seedCode,
+          message: userMessage,
+          sourceFramework: mode === 'code' ? 'auto' : 'prompt',
+        }),
       });
 
       const result = await response.json();
@@ -57,20 +81,76 @@ export default function SynthesisPage() {
         throw new Error(result.error || 'Failed to synthesize code using Hugging Face.');
       }
 
+      await streamCodeTokens(result.code);
+
+      setFinalizedCode(result.code);
+      setStreamingCode(result.code);
+      setMessages((prev) => [...prev, { role: 'assistant', content: 'Applied. Code matrix updated.' }]);
+
       setSubmittedInput((prev) => ({
-        ...prev,
+        ...(prev ?? { type: mode, text: userMessage }),
         code: result.code,
       }));
     } catch (err) {
       console.error('[synthesis] API Error:', err);
       setError(err.message || 'Unable to connect to the Hugging Face AI service.');
-      
-      if (isFirstSubmit) {
-        // Reset state so user isn't stuck on empty workspace if initial prompt fails
-        setSubmittedInput(null);
-      }
+      setMessages((prev) => [...prev, { role: 'assistant', content: 'Request failed. Please retry with a smaller change.' }]);
+      throw err;
     } finally {
+      setIsStreaming(false);
       setIsProcessing(false);
+    }
+  };
+
+  const handleOmniInputSubmit = async (data) => {
+    const isFirstSubmit = !submittedInput;
+
+    if (isFirstSubmit) {
+      const initialCode = data.text;
+
+      setSubmittedInput({
+        ...data,
+        code: initialCode,
+      });
+
+      setStreamingCode(initialCode);
+      setFinalizedCode(initialCode);
+      setMessages([]);
+    }
+
+    try {
+      const seedCode = isFirstSubmit ? data.text : finalizedCode || submittedInput?.code || data.text;
+
+      await runSynthesisTurn({
+        userMessage: data.text,
+        seedCode,
+        mode: data.type,
+      });
+    } catch (err) {
+      if (isFirstSubmit) {
+        setSubmittedInput(null);
+        setStreamingCode('');
+        setFinalizedCode('');
+        setMessages([]);
+      }
+    }
+  };
+
+  const handleInlineSend = async (messageText) => {
+    if (!submittedInput) {
+      return;
+    }
+
+    const seedCode = finalizedCode || submittedInput.code || streamingCode;
+
+    try {
+      await runSynthesisTurn({
+        userMessage: messageText,
+        seedCode,
+        mode: submittedInput.type,
+      });
+    } catch {
+      return;
     }
   };
 
@@ -94,16 +174,22 @@ export default function SynthesisPage() {
       {/* Render the workspace once user submits initial prompt/code */}
       {isAuthenticated && submittedInput && (
         <div className="pb-24">
-          <TriPaneLayout 
-            initialMode={submittedInput.type} 
-            initialCode={submittedInput.code} 
-            isLoading={isProcessing} 
+          <TriPaneLayout
+            mode={submittedInput.type}
+            renderCode={isStreaming ? streamingCode : finalizedCode}
+            previewCode={finalizedCode}
+            isLoading={isProcessing}
+            isStreaming={isStreaming}
+            physics={physicsState}
+            onPhysicsChange={handlePhysicsChange}
+            messages={messages}
+            onSendMessage={handleInlineSend}
           />
         </div>
       )}
 
-      {/* Render the OmniInput so it can run its docking GSAP animations */}
-      {isAuthenticated && (
+      {/* Render OmniInput only for initial seed submission */}
+      {isAuthenticated && !submittedInput && (
         <OmniInput onSubmit={handleOmniInputSubmit} isProcessing={isProcessing} />
       )}
     </div>
