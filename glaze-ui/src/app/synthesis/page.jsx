@@ -12,7 +12,10 @@ export default function SynthesisPage() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleOmniInputSubmit = (data) => {
-    setSubmittedInput(data);
+    setSubmittedInput({
+      ...data,
+      code: '// Processing your input...',
+    });
     setIsProcessing(true);
 
     // Simulate processing delay (would call HF API here later)
@@ -20,7 +23,7 @@ export default function SynthesisPage() {
       setIsProcessing(false);
       setSubmittedInput((prev) => ({
         ...prev,
-        code: '// AI-generated code will appear here based on input type',
+        code: `// Generated from ${prev.type} input\n// Your component preview will render here`,
       }));
     }, 1200);
   };
@@ -32,7 +35,7 @@ export default function SynthesisPage() {
       {isAuthenticated && !submittedInput && <OmniInput onSubmit={handleOmniInputSubmit} isProcessing={isProcessing} />}
 
       {isAuthenticated && submittedInput && (
-        <TriPaneLayout initialMode={submittedInput.type} initialCode={submittedInput.code} />
+        <TriPaneLayout initialMode={submittedInput.type} initialCode={submittedInput.code} isLoading={isProcessing} />
       )}
     </div>
   );
