@@ -2,25 +2,37 @@ import { NextResponse } from 'next/server';
 import { HfInference } from '@huggingface/inference';
 
 const SYSTEM_PROMPT = [
-  'You are the Glaze UI universal translation compiler.',
-  'Analyze the user input regardless of source language or framework, including React, Vue, Svelte, TypeScript, Vanilla JavaScript, HTML, Tailwind, or Bootstrap.',
-  'Translate and normalize the input into one single self-contained React functional component that uses hooks such as useState and useEffect, and style it only with Tailwind CSS utility classes.',
-  'Strip TypeScript syntax cleanly or convert it to valid JavaScript so the result executes in a client-side React sandbox without type errors.',
-  'Detect any async fetch, axios, REST, websocket, timer, or remote API dependency and replace it with realistic local mock state, inline data, or local timers so the component runs instantly without network or CORS failures.',
-  'Remove explicit DOM hooks such as document.getElementById, querySelector, querySelectorAll, innerHTML mutation, and imperative mount logic by translating them into declarative React state and refs only when required.',
-  'Return only the final code payload and nothing else. Do not wrap the response in markdown fences. Do not include explanations, headings, or commentary.',
+  'You are the Glaze UI Code Matrix compiler for multi-turn edits.',
+  'Treat currentCode as the single source of truth. Apply only the userMessage delta to currentCode and preserve all unrelated logic.',
+  'Preserve untouched glassmorphism Tailwind classes, spacing rhythm, and GSAP timelines unless userMessage explicitly requests changing them.',
+  'Accept source code from any framework or language (React, Vue, Svelte, TypeScript, Vanilla JS, HTML) and normalize the result into one self-contained React functional component using hooks.',
+  'Strip TypeScript-only syntax to valid JavaScript.',
+  'Replace fetch, axios, REST, websocket, and external network dependencies with local mock state/timers so the component runs without network access.',
+  'Replace imperative DOM calls (document.getElementById/querySelector/innerHTML) with declarative React state and JSX.',
+  'Use sliderMetadata values (viscosity, blur, mass) only when relevant for style/behavior tuning.',
+  'Return only the revised React component code. No markdown fences, no explanations, no prose.',
 ].join('\n');
 
 const MODEL_NAME = 'meta-llama/Meta-Llama-3-8B-Instruct';
 
 function normalizePayload(body = {}) {
   const workspaceState = body.workspaceState ?? {};
+  const sliderMetadata = body.sliderMetadata ?? workspaceState.sliderMetadata ?? {};
   const sourceCode = body.sourceCode ?? body.baseCode ?? body.snippet ?? body.message ?? '';
+  const currentCode = body.currentCode ?? sourceCode;
+  const userMessage = body.userMessage ?? body.message ?? workspaceState.message ?? '';
 
   return {
     targetLanguage: body.targetLanguage ?? workspaceState.targetLanguage ?? 'React',
     componentId: body.componentId ?? body.registryMeta?.id ?? '',
-    message: body.message ?? workspaceState.message ?? '',
+    message: userMessage,
+    userMessage,
+    currentCode,
+    sliderMetadata: {
+      viscosity: Number(sliderMetadata.viscosity ?? body.viscosity ?? workspaceState.viscosity ?? 1),
+      blur: Number(sliderMetadata.blur ?? body.blur ?? workspaceState.blur ?? 20),
+      mass: Number(sliderMetadata.mass ?? workspaceState.mass ?? 1),
+    },
     sourceLanguage: body.sourceLanguage ?? workspaceState.sourceLanguage ?? guessSourceLanguage(sourceCode),
     sourceFramework: body.sourceFramework ?? workspaceState.sourceFramework ?? guessSourceFramework(sourceCode),
     sourceCode,
@@ -132,7 +144,9 @@ export async function POST(request) {
         content: JSON.stringify({
           targetLanguage: payload.targetLanguage,
           componentId: payload.componentId,
-          message: payload.message,
+          userMessage: payload.userMessage,
+          currentCode: payload.currentCode,
+          sliderMetadata: payload.sliderMetadata,
           sourceLanguage: payload.sourceLanguage,
           sourceFramework: payload.sourceFramework,
           sourceCode: payload.sourceCode,
