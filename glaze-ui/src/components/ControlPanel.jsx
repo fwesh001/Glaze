@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import gsap from 'gsap';
 import { Copy } from 'lucide-react';
@@ -102,7 +102,7 @@ export default function ControlPanel() {
   }, [serializedPayload, setDisplayCode]);
 
   // Manual morphing handler (not auto-triggered)
-  const handleMorph = async () => {
+  const handleMorph = useCallback(async () => {
     morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
     morphTimersRef.current = [];
 
@@ -148,7 +148,7 @@ export default function ControlPanel() {
       } finally {
         setCompilerLoading(false);
       }
-    };
+    }, [serializedPayload, setCompilerLoading, showCompilerToast, setDisplayCode]);
 
   // Trigger compile when language changes in Code tab
   useEffect(() => {
@@ -168,7 +168,7 @@ export default function ControlPanel() {
       window.clearTimeout(debounceTimer);
       morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
     };
-  }, [language, activeTab, handleMorph, serializedPayload, setCompilerLoading, showCompilerToast]);
+  }, [language, activeTab, handleMorph]);
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-glass">
