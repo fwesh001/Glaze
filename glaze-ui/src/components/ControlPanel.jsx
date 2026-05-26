@@ -280,13 +280,14 @@ export default function ControlPanel() {
                     type="button"
                     onClick={handleCopyCode}
                     title="Copy code to clipboard"
-                    className={`transition-all ${
+                    className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.35em] transition-all ${
                       copyFeedback
-                        ? 'text-emerald-400'
-                        : 'text-zinc-500 hover:text-white'
+                        ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300'
+                        : 'border-white/10 bg-white/[0.05] text-zinc-500 hover:border-white/20 hover:bg-white/[0.08] hover:text-white'
                     }`}
                   >
                     <Copy size={14} />
+                    <span>Copy</span>
                   </button>
                 </div>
               </div>
