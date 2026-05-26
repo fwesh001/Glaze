@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
+import { Send } from 'lucide-react';
 import gsap from 'gsap';
 
 function detectInputType(text) {
@@ -36,38 +37,48 @@ export default function OmniInput({ onSubmit, isProcessing }) {
     setInputType(detected);
   }, [inputValue]);
 
+  const submitInput = () => {
+    const trimmedValue = inputValue.trim();
+
+    if (!trimmedValue) {
+      return;
+    }
+
+    // Compress the input
+    if (containerRef.current && inputRef.current) {
+      gsap.to(containerRef.current, {
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        height: 'auto',
+        duration: 0.5,
+        ease: 'power3.inOut',
+        onStart: () => setIsCompressed(true),
+      });
+
+      gsap.to(inputRef.current, {
+        height: '3rem',
+        duration: 0.5,
+        ease: 'power3.inOut',
+      });
+    }
+
+    if (onSubmit) {
+      onSubmit({
+        text: trimmedValue,
+        type: inputType,
+      });
+    }
+
+    setInputValue('');
+  };
+
   const handleSubmit = (e) => {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && inputValue.trim()) {
       e.preventDefault();
-      
-      // Compress the input
-      if (containerRef.current && inputRef.current) {
-        gsap.to(containerRef.current, {
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-          height: 'auto',
-          duration: 0.5,
-          ease: 'power3.inOut',
-          onStart: () => setIsCompressed(true),
-        });
-
-        gsap.to(inputRef.current, {
-          height: '3rem',
-          duration: 0.5,
-          ease: 'power3.inOut',
-        });
-      }
-
-      // Call the parent with submission data
-      if (onSubmit) {
-        onSubmit({
-          text: inputValue,
-          type: inputType,
-        });
-      }
+      submitInput();
     }
   };
 
@@ -102,17 +113,27 @@ export default function OmniInput({ onSubmit, isProcessing }) {
               : ''
           }`}
         />
-        {!isCompressed && (
-          <div className="mt-4 text-center text-xs uppercase tracking-[0.3em] text-zinc-500">
-            {inputType === 'code' ? (
-              <span className="text-cyan-400">Code Detection Active</span>
-            ) : inputType === 'natural' ? (
-              <span>Natural Language Detected</span>
-            ) : (
-              <span>Cmd+Enter to Submit</span>
-            )}
+          <div className="mt-4 flex items-center justify-between gap-3">
+            <div className="text-center text-xs uppercase tracking-[0.3em] text-zinc-500">
+              {inputType === 'code' ? (
+                <span className="text-cyan-400">Code Detection Active</span>
+              ) : inputType === 'natural' ? (
+                <span>Natural Language Detected</span>
+              ) : (
+                <span>Cmd+Enter to Submit</span>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={submitInput}
+              disabled={isProcessing || !inputValue.trim()}
+              className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200 transition-colors hover:border-cyan-300/50 hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <Send size={14} />
+              Send
+            </button>
           </div>
-        )}
       </div>
     </div>
   );
