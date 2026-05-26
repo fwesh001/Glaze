@@ -8,8 +8,13 @@ export const TARGET_LANGUAGE_MAP = {
 };
 
 export function serializeMorphPayload({ language, settings, prompt, registryItem, snippet = BASE_TOAST_SNIPPET }) {
+  const sourceCode = snippet ?? BASE_TOAST_SNIPPET;
+
   return {
     targetLanguage: language,
+    sourceLanguage: 'auto',
+    sourceFramework: 'auto',
+    sourceCode,
     workspaceState: {
       message: settings?.message ?? '',
       viscosity: settings?.viscosity ?? 1,
@@ -25,8 +30,25 @@ export function serializeMorphPayload({ language, settings, prompt, registryItem
         }
       : null,
     prompt,
-    snippet,
+    snippet: sourceCode,
   };
+}
+
+function stripMarkdownFences(code = '') {
+  const text = String(code).trim();
+
+  if (!text) return '';
+
+  const fencedMatch = text.match(/^```(?:jsx|tsx|js|javascript|ts|typescript|vue|svelte|html|react|text)?\s*([\s\S]*?)```$/i);
+
+  if (fencedMatch?.[1]) {
+    return fencedMatch[1].trim();
+  }
+
+  return text
+    .replace(/^```[a-z]*\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
 }
 
 export function buildMorphCode(payload) {
@@ -120,5 +142,8 @@ export async function requestMorphCode(payload) {
     throw new Error(message);
   }
 
-  return data;
+  return {
+    ...data,
+    code: stripMarkdownFences(data?.code ?? ''),
+  };
 }
