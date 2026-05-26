@@ -1,85 +1,143 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 
-function getPreviewMode(code) {
-  const source = code?.toLowerCase?.() ?? '';
+function IframeRunner({ code, physics }) {
+  const iframeRef = useRef(null);
 
-  if (source.includes('countdowncapsule') || source.includes('countdown-capsule') || source.includes('days-filler')) {
-    return 'countdown';
+  // Clean raw imports/exports so UMD React & Babel can execute it cleanly
+  const cleanedCode = useMemo(() => {
+    if (!code) return '';
+    return code
+      .replace(/import\s+[\s\S]*?\s+from\s+['"].*?['"];?/g, '')
+      .replace(/import\s+['"].*?['"];?/g, '')
+      .replace(/export\s+default\s+/g, '')
+      .replace(/export\s+/g, '');
+  }, [code]);
+
+  // Extract the main component's name
+  const componentName = useMemo(() => {
+    if (!cleanedCode) return null;
+    const match = cleanedCode.match(/(?:function|const|let)\s+([A-Z]\w+)/);
+    return match ? match[1] : null;
+  }, [cleanedCode]);
+
+  // Build the sandboxed dynamic preview frame
+  const srcDoc = useMemo(() => {
+    if (!cleanedCode || !componentName) return '';
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      background-color: transparent;
+      margin: 0;
+      padding: 16px;
+      color: white;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 25rem;
+      overflow: auto;
+    }
+    :root {
+      --current-blur-prop: ${physics.blur}px;
+      --viscosity: ${physics.viscosity};
+      --mass: ${physics.mass};
+      --workspace-blur: ${physics.blur}px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root" style="width: 100%;"></div>
+  <div id="error-container" style="color: #f87171; font-family: monospace; font-size: 11px; white-space: pre-wrap; padding: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; width: 100%; display: none;"></div>
+
+  <script>
+    // Expose local module mocks
+    window.exports = {};
+    window.module = { exports: window.exports };
+    window.require = function(name) {
+      if (name === 'react') return window.React;
+      if (name === 'react-dom') return window.ReactDOM;
+      if (name === 'gsap') return window.gsap;
+      return {};
+    };
+  </script>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+    try {
+      ${cleanedCode}
+
+      // Hook component up to global scope
+      window.${componentName} = ${componentName};
+
+      if (window.${componentName}) {
+        const Comp = window.${componentName};
+        ReactDOM.createRoot(document.getElementById('root')).render(
+          <Comp 
+            viscosity={${physics.viscosity}}
+            blur={${physics.blur}}
+            mass={${physics.mass}}
+          />
+        );
+      } else {
+        throw new Error("Could not find a valid React component named '" + "${componentName}" + "'.");
+      }
+    } catch (e) {
+      const errDiv = document.getElementById('error-container');
+      errDiv.innerText = e.message + "\\n\\n" + e.stack;
+      errDiv.style.display = 'block';
+      document.getElementById('root').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
+    `;
+  }, [cleanedCode, componentName, physics]);
+
+  if (!srcDoc) {
+    return (
+      <div className="p-4 text-center text-xs text-zinc-400">
+        Waiting for a valid component declaration (e.g. 'function Component() { ... }').
+      </div>
+    );
   }
 
-  return 'fallback';
-}
-
-function CountdownPreview() {
-  const targetTime = useMemo(() => new Date('Dec 31 2026 23:59:00').getTime(), []);
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(Date.now()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const distance = Math.max(targetTime - now, 0);
-  const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-  const metrics = [
-    { label: 'Days', value: days, fill: Math.min((days / 365) * 100, 100) },
-    { label: 'Hours', value: hours, fill: (hours / 24) * 100 },
-    { label: 'Minutes', value: minutes, fill: (minutes / 60) * 100 },
-    { label: 'Seconds', value: seconds, fill: (seconds / 60) * 100 },
-  ];
-
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 rounded-3xl border border-amber-300/20 bg-amber-100/10 p-6 text-zinc-100 shadow-[0_0_40px_rgba(251,191,36,0.08)]">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <div className="text-[0.62rem] uppercase tracking-[0.45em] text-amber-200/70">Web Component Preview</div>
-          <div className="mt-1 text-lg font-semibold text-white">countdown-capsule</div>
-        </div>
-        <div className="rounded-full border border-amber-200/20 bg-black/30 px-3 py-1 text-[0.62rem] uppercase tracking-[0.35em] text-amber-200/70">
-          Live
-        </div>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/25 p-5">
-        {metrics.map((metric) => (
-          <div key={metric.label} className="min-w-[120px] flex-1">
-            <div className="mb-2 text-sm font-bold text-white">
-              {metric.label}: <span className="text-amber-200">{String(metric.value).padStart(2, '0')}</span>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-white/10">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-amber-300 to-cyan-300"
-                style={{ width: `${metric.fill}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="text-xs uppercase tracking-[0.35em] text-zinc-400">
-        Shadow DOM + Tailwind-style capsule detected and rendered as a live preview.
-      </div>
-    </div>
+    <iframe
+      ref={iframeRef}
+      srcDoc={srcDoc}
+      title="Live Preview Sandbox"
+      className="w-full h-[28rem] border-0 bg-transparent"
+      sandbox="allow-scripts"
+    />
   );
 }
 
 export default function LiveCanvas({ code, physics, isProcessing }) {
-  const previewMode = getPreviewMode(code);
+  const hasCode = code && code.trim().length > 0 && !code.startsWith('// Processing');
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl">
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-xl h-full flex flex-col">
       <div className="mb-4 text-xs uppercase tracking-[0.35em] text-zinc-500">Live Canvas</div>
-      <div className={`flex min-h-[28rem] items-center justify-center rounded-xl border border-white/10 bg-black/40 p-4 ${isProcessing ? 'animate-pulse' : ''}`}>
-        {previewMode === 'countdown' ? (
-          <CountdownPreview />
+      <div className={`flex-1 min-h-[28rem] flex items-center justify-center rounded-xl border border-white/10 bg-black/40 p-4 ${isProcessing ? 'animate-pulse' : ''}`}>
+        {isProcessing ? (
+          <p className="text-center text-sm text-zinc-400">Rendering component...</p>
+        ) : !hasCode ? (
+          <p className="text-center text-sm text-zinc-400">Component preview</p>
         ) : (
-          <p className="text-center text-sm text-zinc-400">{isProcessing ? 'Rendering component...' : 'Component preview'}</p>
+          <IframeRunner code={code} physics={physics} />
         )}
       </div>
     </div>
