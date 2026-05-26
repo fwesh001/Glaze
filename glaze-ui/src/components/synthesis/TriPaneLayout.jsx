@@ -1,41 +1,35 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import LiveCanvas from './LiveCanvas';
-import CodeVisualizer from './CodeVisualizer';
+import CodeMatrixTab from './CodeMatrixTab';
 import PhysicsDeck from './PhysicsDeck';
 
-export default function TriPaneLayout({ initialMode = null, initialCode = null, isLoading = false }) {
-  const [isProcessing, setIsProcessing] = useState(isLoading);
-  const [currentMode, setCurrentMode] = useState(initialMode || null);
-  const [aiResponsePayload, setAiResponsePayload] = useState(initialCode || '');
-  const [physicsState, setPhysicsState] = useState({
-    viscosity: 1,
-    blur: 20,
-    mass: 1,
-  });
-
-  const handlePhysicsChange = (key, value) => {
-    setPhysicsState((prev) => ({ ...prev, [key]: value }));
-  };
-
-  useEffect(() => {
-    setIsProcessing(isLoading);
-  }, [isLoading]);
-
-  useEffect(() => {
-    setAiResponsePayload(initialCode || '');
-  }, [initialCode]);
-
-  if (!currentMode) {
+export default function TriPaneLayout({
+  mode = null,
+  renderCode = '',
+  previewCode = '',
+  isLoading = false,
+  isStreaming = false,
+  physics,
+  onPhysicsChange,
+  messages,
+  onSendMessage,
+}) {
+  if (!mode) {
     return null;
   }
 
   return (
     <div className="grid h-screen grid-cols-[40%_40%_20%] gap-4 bg-black p-4">
-      <LiveCanvas code={aiResponsePayload} physics={physicsState} isProcessing={isProcessing} />
-      <CodeVisualizer code={aiResponsePayload} isProcessing={isProcessing} />
-      <PhysicsDeck physics={physicsState} onChange={handlePhysicsChange} />
+      <LiveCanvas code={previewCode} physics={physics} isProcessing={isLoading} />
+      <CodeMatrixTab
+        code={renderCode}
+        messages={messages}
+        onSendMessage={onSendMessage}
+        isStreaming={isStreaming}
+        isProcessing={isLoading}
+      />
+      <PhysicsDeck physics={physics} onChange={onPhysicsChange} />
     </div>
   );
 }
