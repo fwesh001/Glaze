@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LiveCanvas from './LiveCanvas';
 import CodeVisualizer from './CodeVisualizer';
 import PhysicsDeck from './PhysicsDeck';
 
-export default function TriPaneLayout({ initialMode = null, initialCode = null }) {
-  const [isProcessing, setIsProcessing] = useState(false);
+export default function TriPaneLayout({ initialMode = null, initialCode = null, isLoading = false }) {
+  const [isProcessing, setIsProcessing] = useState(isLoading);
   const [currentMode, setCurrentMode] = useState(initialMode || null);
-  const [aiResponsePayload, setAiResponsePayload] = useState(initialCode || null);
+  const [aiResponsePayload, setAiResponsePayload] = useState(initialCode || '');
   const [physicsState, setPhysicsState] = useState({
     viscosity: 1,
     blur: 20,
@@ -19,7 +19,15 @@ export default function TriPaneLayout({ initialMode = null, initialCode = null }
     setPhysicsState((prev) => ({ ...prev, [key]: value }));
   };
 
-  if (!currentMode || !aiResponsePayload) {
+  useEffect(() => {
+    setIsProcessing(isLoading);
+  }, [isLoading]);
+
+  useEffect(() => {
+    setAiResponsePayload(initialCode || '');
+  }, [initialCode]);
+
+  if (!currentMode) {
     return null;
   }
 
