@@ -1,6 +1,7 @@
 import './globals.css';
 import '../library/toasts/liquid-toast/style.css';
 import { PageTransitionProvider } from '../components/PageTransitionProvider';
+import { GlazeAuthProvider } from '../components/auth/GlazeAuthProvider';
 
 export const metadata = {
   title: 'Glaze UI',
@@ -11,7 +12,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
       <body>
-        <PageTransitionProvider>{children}</PageTransitionProvider>
+        <GlazeAuthProvider>
+          <PageTransitionProvider>{children}</PageTransitionProvider>
+        </GlazeAuthProvider>
       </body>
     </html>
   );
