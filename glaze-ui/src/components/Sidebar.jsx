@@ -4,9 +4,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Link from 'next/link';
 import gsap from 'gsap';
-import { ChevronsLeftRight, Lock, Menu, PanelLeft, Search, Sparkles } from 'lucide-react';
+import { ChevronsLeftRight, Lock, LogIn, Menu, PanelLeft, Search, Sparkles } from 'lucide-react';
 
-import useMockSession from './auth/useMockSession';
+import { useGlazeAuth } from './auth/GlazeAuthProvider';
 import { componentRegistries, getRegistryEntriesByCategory } from '../registry/index.js';
 
 const categoryTabs = [
@@ -22,7 +22,7 @@ export default function Sidebar({ registryItem }) {
   const [query, setQuery] = useState('');
   const asideRef = useRef(null);
   const labelRefs = useRef([]);
-  const { isAuthenticated } = useMockSession();
+  const { isAuthenticated, user, login, avatarUrl, displayName } = useGlazeAuth();
 
   labelRefs.current = [];
 
@@ -102,6 +102,43 @@ export default function Sidebar({ registryItem }) {
           {collapsed ? <Menu size={16} /> : <PanelLeft size={16} />}
         </button>
       </div>
+
+      {!collapsed ? (
+        <div className="mt-4 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-3 py-3">
+          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-zinc-900">
+            {isAuthenticated && avatarUrl ? (
+              <img src={avatarUrl} alt={displayName || 'Glaze developer'} className="h-full w-full object-cover" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-[0.65rem] font-semibold uppercase tracking-[0.25em] text-zinc-500">
+                G
+              </div>
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-500">Session</div>
+            <div className="truncate text-sm text-white">{isAuthenticated ? displayName : 'Guest Session'}</div>
+          </div>
+
+          {isAuthenticated ? (
+            <Link
+              href="/profile"
+              className="inline-flex h-10 items-center justify-center rounded-xl border border-white/10 px-3 text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-zinc-300 transition-colors hover:border-cyan-400/30 hover:text-cyan-300"
+            >
+              Profile
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={login}
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-cyan-400/20 bg-cyan-400/10 px-3 text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-cyan-300 transition-colors hover:bg-cyan-400/20"
+            >
+              <LogIn size={13} />
+              Initialize
+            </button>
+          )}
+        </div>
+      ) : null}
 
       {!collapsed ? (
         <>
