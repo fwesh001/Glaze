@@ -9,6 +9,8 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import { useWorkspace } from './WorkspaceProvider.jsx';
 import { BASE_TOAST_SNIPPET, TARGET_LANGUAGE_MAP, buildMorphCode, requestMorphCode, serializeMorphPayload } from '../lib/morph.js';
+import { useGlazeAuth } from './auth/GlazeAuthProvider.jsx';
+import { supabase } from '../lib/supabase.js';
 
 function ControlRow({ label, children, hint }) {
   return (
@@ -41,6 +43,7 @@ export default function ControlPanel() {
   const [activeTab, setActiveTab] = useState('settings');
   const [isMorphing, setIsMorphing] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
+  const { isAuthenticated, user } = useGlazeAuth();
   const {
     registryItem,
     settings,
@@ -57,6 +60,46 @@ export default function ControlPanel() {
   const codePaneRef = useRef(null);
   const morphTimersRef = useRef([]);
   const copyTimerRef = useRef(null);
+
+  const handleSaveComponent = async () => {
+    if (!isAuthenticated || !user?.id) {
+      try {
+        const stored = window.localStorage.getItem('glaze_guest_presets');
+        const existing = stored ? JSON.parse(stored) : [];
+        const categoryMap = { toast: 'T', modal: 'M', loader: 'L' };
+        const newPreset = {
+          type: categoryMap[registryItem?.category] || 'M',
+          title: `${registryItem?.name || 'Component'} (Custom)`,
+          physics_config: settings,
+          compiled_code: displayCode,
+        };
+        window.localStorage.setItem('glaze_guest_presets', JSON.stringify([...existing, newPreset]));
+        showCompilerToast('Saved locally as guest preset. Log in to sync.', 'success');
+      } catch (err) {
+        showCompilerToast('Failed to save preset locally.', 'error');
+      }
+      return;
+    }
+
+    try {
+      const categoryMap = { toast: 'T', modal: 'M', loader: 'L' };
+      const { error } = await supabase
+        .from('glaze_components')
+        .insert({
+          author_id: user.id,
+          type: categoryMap[registryItem?.category] || 'M',
+          title: `${registryItem?.name || 'Component'} (Custom)`,
+          physics_config: settings,
+          compiled_code: displayCode,
+          is_public: false,
+        });
+
+      if (error) throw error;
+      showCompilerToast('Saved component to your cloud profile!', 'success');
+    } catch (err) {
+      showCompilerToast(`Failed to save component: ${err.message}`, 'error');
+    }
+  };
 
   const handleCopyCode = async () => {
     try {
@@ -141,6 +184,46 @@ export default function ControlPanel() {
         }, 220);
 
         morphTimersRef.current = [revealTimer, settleTimer];
+
+        // Perform prompt logging and component saving if logged in
+        if (isAuthenticated && user?.id) {
+          const categoryMap = { toast: 'T', modal: 'M', loader: 'L' };
+          const dbType = categoryMap[registryItem?.category] || 'M';
+
+          void (async () => {
+            try {
+              const { data: compData, error: compError } = await supabase
+                .from('glaze_components')
+                .insert({
+                  author_id: user.id,
+                  type: dbType,
+                  title: `${registryItem?.name || 'Component'} (AI Morph)`,
+                  physics_config: settings,
+                  compiled_code: nextCode,
+                  is_public: false,
+                })
+                .select('id')
+                .single();
+
+              if (compError) {
+                console.error('[ControlPanel] Failed to save AI morphed component:', compError);
+              } else if (compData?.id && prompt?.trim()) {
+                const { error: logError } = await supabase
+                  .from('glaze_interaction_logs')
+                  .insert({
+                    user_id: user.id,
+                    component_id: compData.id,
+                    prompt_text: prompt.trim(),
+                  });
+                if (logError) {
+                  console.error('[ControlPanel] Failed to log interaction prompt:', logError);
+                }
+              }
+            } catch (err) {
+              console.error('[ControlPanel] Unexpected error during component log sync:', err);
+            }
+          })();
+        }
       } catch (error) {
         showCompilerToast(`Compiler morph failed. ${error?.message ?? 'Using local fallback.'}`, 'error');
         setDisplayCode(buildMorphCode(serializedPayload));
@@ -148,7 +231,7 @@ export default function ControlPanel() {
       } finally {
         setCompilerLoading(false);
       }
-    }, [serializedPayload, setCompilerLoading, showCompilerToast, setDisplayCode]);
+    }, [serializedPayload, setCompilerLoading, showCompilerToast, setDisplayCode, isAuthenticated, user, registryItem, settings, prompt]);
 
   // Trigger compile when language changes in Code tab
   useEffect(() => {
@@ -242,6 +325,16 @@ export default function ControlPanel() {
                 </div>
               </ControlRow>
             ))}
+          </div>
+
+          <div className="col-span-1 lg:col-span-2 flex justify-end pt-2 border-t border-white/5">
+            <button
+              type="button"
+              onClick={handleSaveComponent}
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-zinc-300 transition-all hover:bg-cyan-400/10 hover:border-cyan-400/30 hover:text-cyan-300"
+            >
+              Save Custom Component
+            </button>
           </div>
         </div>
       ) : (
