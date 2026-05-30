@@ -1,3 +1,4 @@
+"use client"
 import { useEffect, useRef, useState } from 'react'
 import { Home, Copy, Clipboard, RefreshCw, Globe, Share2, MousePointer2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
