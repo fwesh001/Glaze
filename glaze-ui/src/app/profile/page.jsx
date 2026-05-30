@@ -28,6 +28,8 @@ import gsap from 'gsap';
 
 import { useGlazeAuth } from '../../components/auth/GlazeAuthProvider';
 import Sidebar from '../../components/Sidebar';
+import GlazeSiteModal from '../../components/ui/GlazeSiteModal';
+import GlazeSiteToast from '../../components/ui/GlazeSiteToast';
 import supabase from '../../lib/supabase';
 
 export default function ProfilePage() {
@@ -58,11 +60,23 @@ export default function ProfilePage() {
   const [deleteStep, setDeleteStep] = useState(1);
   const [confirmUsername, setConfirmUsername] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [siteModal, setSiteModal] = useState(null);
+  const [siteToast, setSiteToast] = useState(null);
 
   const joinedDate = useMemo(() => {
     const value = user?.created_at;
     return value ? new Date(value).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown';
   }, [user?.created_at]);
+
+  useEffect(() => {
+    if (!siteToast) return undefined;
+
+    const timer = window.setTimeout(() => {
+      setSiteToast(null);
+    }, 2600);
+
+    return () => window.clearTimeout(timer);
+  }, [siteToast]);
 
   // Auth gate check
   useEffect(() => {
@@ -300,12 +314,20 @@ export default function ProfilePage() {
           .eq('component_id', componentId);
         if (error) throw error;
         setFavoritedIds(prev => prev.filter(id => id !== componentId));
+        setSiteToast({
+          message: 'Removed from Liked UI',
+          icon: Heart,
+        });
       } else {
         const { error } = await supabase
           .from('glaze_favorites')
           .insert({ user_id: user.id, component_id: componentId });
         if (error) throw error;
         setFavoritedIds(prev => [...prev, componentId]);
+        setSiteToast({
+          message: 'Added to Liked UI',
+          icon: Heart,
+        });
       }
     } catch (err) {
       console.error('[Profile] Favorite toggle failed:', err);
@@ -358,7 +380,11 @@ export default function ProfilePage() {
       router.replace('/');
     } catch (err) {
       console.error('[Profile] Anonymization transaction failed:', err);
-      alert('An error occurred during account anonymization. Please try again.');
+      setSiteModal({
+        title: 'Account Anonymization Failed',
+        message: 'An error occurred during account anonymization. Please try again.',
+        ctaLabel: 'Close',
+      });
     } finally {
       setDeleting(false);
     }
@@ -382,7 +408,11 @@ export default function ProfilePage() {
         }
       ];
       window.localStorage.setItem('glaze_guest_presets', JSON.stringify(samplePresets));
-      alert('Mock guest presets injected into localStorage! Log out and sign in again to trigger automatic DB migration.');
+      setSiteModal({
+        title: 'Guest Presets Seeded',
+        message: 'Mock guest presets were injected into localStorage. Log out and sign in again to trigger automatic DB migration.',
+        ctaLabel: 'Close',
+      });
     } catch (err) {
       console.error(err);
     }
@@ -398,6 +428,24 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
+
+        {siteModal ? (
+          <GlazeSiteModal
+            title={siteModal.title}
+            message={siteModal.message}
+            ctaLabel={siteModal.ctaLabel || 'Close'}
+            onConfirm={() => setSiteModal(null)}
+            onClose={() => setSiteModal(null)}
+          />
+        ) : null}
+
+        {siteToast ? (
+          <GlazeSiteToast
+            message={siteToast.message}
+            icon={siteToast.icon}
+            onDismiss={() => setSiteToast(null)}
+          />
+        ) : null}
     );
   }
 
