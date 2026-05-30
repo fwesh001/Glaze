@@ -428,24 +428,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
-
-        {siteModal ? (
-          <GlazeSiteModal
-            title={siteModal.title}
-            message={siteModal.message}
-            ctaLabel={siteModal.ctaLabel || 'Close'}
-            onConfirm={() => setSiteModal(null)}
-            onClose={() => setSiteModal(null)}
-          />
-        ) : null}
-
-        {siteToast ? (
-          <GlazeSiteToast
-            message={siteToast.message}
-            icon={siteToast.icon}
-            onDismiss={() => setSiteToast(null)}
-          />
-        ) : null}
     );
   }
 
@@ -864,6 +846,24 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {siteModal ? (
+        <GlazeSiteModal
+          title={siteModal.title}
+          message={siteModal.message}
+          ctaLabel={siteModal.ctaLabel || 'Close'}
+          onConfirm={() => setSiteModal(null)}
+          onClose={() => setSiteModal(null)}
+        />
+      ) : null}
+
+      {siteToast ? (
+        <GlazeSiteToast
+          message={siteToast.message}
+          icon={siteToast.icon}
+          onDismiss={() => setSiteToast(null)}
+        />
+      ) : null}
 
       {/* Delete / Anonymize Account Multi-Step Warning Modal */}
       {showDeleteModal && (
