@@ -7,7 +7,7 @@ export default function SynthesisPage() {
   // Coming Soon: Synthesis Engine is locked for production deployment
   // Full multi-turn workspace will be enabled in v1.0 release
   return (
-    <div className="min-h-screen flex flex-col">
+    <div data-glaze-cursor-mode="compose" className="min-h-screen flex flex-col">
       <div className="flex-1">
         <ComingSoonModal />
       </div>
