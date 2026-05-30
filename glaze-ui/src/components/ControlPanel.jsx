@@ -337,8 +337,7 @@ export default function ControlPanel() {
             </button>
           </div>
         </div>
-      ) : (
-        <div className="mt-5 grid gap-4 lg:grid-cols-[1.45fr_0.55fr]">
+        <div className="mt-5">
           <div className="space-y-4">
             <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/70 px-4 py-3">
               <div>
@@ -413,26 +412,6 @@ export default function ControlPanel() {
               >
                 {displayCode}
               </SyntaxHighlighter>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <label className="flex h-full flex-1 flex-col rounded-2xl border border-white/10 bg-black/60 p-4 text-sm text-zinc-300">
-              <div className="text-xs uppercase tracking-[0.35em] text-zinc-500">AI Prompt Console</div>
-              <textarea
-                rows={10}
-                value={prompt}
-                onChange={(event) => setPrompt(event.target.value)}
-                placeholder="Change it to use Tailwind utility classes..."
-                className="mt-4 min-h-40 flex-1 rounded-2xl border border-white/10 bg-white/[0.03] p-4 font-mono text-sm text-white outline-none placeholder:text-zinc-600"
-              />
-            </label>
-
-            <div className="rounded-2xl border border-white/10 bg-black/60 p-4 text-xs text-zinc-400">
-              <div className="uppercase tracking-[0.35em] text-zinc-500">Serialized Telemetry</div>
-              <pre className="mt-4 max-h-48 overflow-auto whitespace-pre-wrap break-words text-[0.7rem] leading-6 text-zinc-300">
-                {JSON.stringify(serializedPayload, null, 2)}
-              </pre>
             </div>
           </div>
         </div>
