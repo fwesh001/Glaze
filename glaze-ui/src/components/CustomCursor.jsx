@@ -23,7 +23,6 @@ function lerp(start, end, amount) {
 
 export default function CustomCursor() {
   const cursorRef = useRef(null);
-  const labelRef = useRef(null);
   const stateRef = useRef({
     visible: false,
     active: false,
@@ -41,8 +40,8 @@ export default function CustomCursor() {
     frame: 0,
   });
 
-  const cursorScale = 0.54;
-  const cursorTilt = -18;
+  const cursorScale = 0.32;
+  const cursorTilt = -28;
 
   useEffect(() => {
     const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -130,16 +129,12 @@ export default function CustomCursor() {
       state.ry = lerp(state.ry, state.ty, 0.18);
 
       if (cursorRef.current) {
-        const scale = state.active ? 1.1 : 1;
-        const magneticScale = state.magnetic ? 1.14 : 1;
+        const scale = state.active ? 1.04 : 1;
+        const magneticScale = state.magnetic ? 1.08 : 1;
         cursorRef.current.style.opacity = state.visible ? '1' : '0';
         cursorRef.current.style.transform = `translate3d(${state.rx}px, ${state.ry}px, 0) translate(-50%, -50%) scale(${cursorScale * scale * magneticScale})`;
         cursorRef.current.style.setProperty('--glaze-cursor-tone', state.tone);
         cursorRef.current.style.setProperty('--glaze-cursor-glow', state.glow);
-      }
-
-      if (labelRef.current) {
-        labelRef.current.textContent = state.label;
       }
 
       stateRef.current.frame = requestAnimationFrame(animationFrame);
@@ -179,9 +174,9 @@ export default function CustomCursor() {
           '--glaze-cursor-glow': MODE_CONFIG.default.glow,
         }}
       >
-        <div className="relative flex items-start gap-1.5">
+        <div className="relative flex items-start">
           <div
-            className="relative h-24 w-24 drop-shadow-[0_0_24px_var(--glaze-cursor-glow)]"
+            className="relative h-14 w-14 drop-shadow-[0_0_16px_var(--glaze-cursor-glow)]"
             style={{ transform: `rotate(${cursorTilt}deg)`, transformOrigin: 'center center' }}
           >
             <svg viewBox="0 0 120 140" className="h-full w-full overflow-visible">
@@ -198,13 +193,6 @@ export default function CustomCursor() {
                 fill="rgba(255,255,255,0.14)"
               />
             </svg>
-          </div>
-
-          <div
-            ref={labelRef}
-            className="mt-1 rounded-full border border-white/10 bg-black/70 px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.3em] text-cyan-100 shadow-[0_0_20px_rgba(0,0,0,0.35)] backdrop-blur-md"
-          >
-            NAV
           </div>
         </div>
       </div>
