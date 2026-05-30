@@ -1,5 +1,6 @@
 import './globals.css';
 import '../library/toasts/liquid-toast/style.css';
+import CustomCursor from '../components/CustomCursor';
 import { PageTransitionProvider } from '../components/PageTransitionProvider';
 import { GlazeAuthProvider } from '../components/auth/GlazeAuthProvider';
 
@@ -13,7 +14,10 @@ export default function RootLayout({ children }) {
     <html lang="en" className="dark">
       <body>
         <GlazeAuthProvider>
-          <PageTransitionProvider>{children}</PageTransitionProvider>
+          <PageTransitionProvider>
+            <CustomCursor />
+            {children}
+          </PageTransitionProvider>
         </GlazeAuthProvider>
       </body>
     </html>
