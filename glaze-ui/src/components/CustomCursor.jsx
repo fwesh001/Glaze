@@ -41,6 +41,9 @@ export default function CustomCursor() {
     frame: 0,
   });
 
+  const cursorScale = 0.54;
+  const cursorTilt = -18;
+
   useEffect(() => {
     const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -130,7 +133,7 @@ export default function CustomCursor() {
         const scale = state.active ? 1.1 : 1;
         const magneticScale = state.magnetic ? 1.14 : 1;
         cursorRef.current.style.opacity = state.visible ? '1' : '0';
-        cursorRef.current.style.transform = `translate3d(${state.rx}px, ${state.ry}px, 0) translate(-50%, -50%) scale(${scale * magneticScale})`;
+        cursorRef.current.style.transform = `translate3d(${state.rx}px, ${state.ry}px, 0) translate(-50%, -50%) scale(${cursorScale * scale * magneticScale})`;
         cursorRef.current.style.setProperty('--glaze-cursor-tone', state.tone);
         cursorRef.current.style.setProperty('--glaze-cursor-glow', state.glow);
       }
@@ -176,8 +179,11 @@ export default function CustomCursor() {
           '--glaze-cursor-glow': MODE_CONFIG.default.glow,
         }}
       >
-        <div className="relative flex items-start gap-2">
-          <div className="relative h-24 w-24 drop-shadow-[0_0_24px_var(--glaze-cursor-glow)]">
+        <div className="relative flex items-start gap-1.5">
+          <div
+            className="relative h-24 w-24 drop-shadow-[0_0_24px_var(--glaze-cursor-glow)]"
+            style={{ transform: `rotate(${cursorTilt}deg)`, transformOrigin: 'center center' }}
+          >
             <svg viewBox="0 0 120 140" className="h-full w-full overflow-visible">
               <path
                 d="M60 4 L106 118 L68 96 L60 111 L51 96 L14 118 Z"
@@ -196,7 +202,7 @@ export default function CustomCursor() {
 
           <div
             ref={labelRef}
-            className="mt-2 rounded-full border border-white/10 bg-black/70 px-3 py-1 text-[10px] font-black uppercase tracking-[0.35em] text-cyan-100 shadow-[0_0_20px_rgba(0,0,0,0.35)] backdrop-blur-md"
+            className="mt-1 rounded-full border border-white/10 bg-black/70 px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.3em] text-cyan-100 shadow-[0_0_20px_rgba(0,0,0,0.35)] backdrop-blur-md"
           >
             NAV
           </div>
