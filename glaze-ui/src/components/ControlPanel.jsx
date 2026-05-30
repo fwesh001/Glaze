@@ -12,6 +12,18 @@ import { BASE_TOAST_SNIPPET, TARGET_LANGUAGE_MAP, buildMorphCode, requestMorphCo
 import { useGlazeAuth } from './auth/GlazeAuthProvider.jsx';
 import { supabase } from '../lib/supabase.js';
 
+function ControlRow({ label, children, hint }) {
+  return (
+    <label className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-300">
+      <div className="flex items-center justify-between gap-4">
+        <span className="font-medium text-white">{label}</span>
+        {hint ? <span className="text-xs uppercase tracking-[0.3em] text-zinc-500">{hint}</span> : null}
+      </div>
+      {children}
+    </label>
+  );
+}
+
 function scrambleCode(source) {
   const glyphs = '░▒▓█<>/={}[]()_+-*#@$';
 
@@ -28,15 +40,18 @@ function scrambleCode(source) {
 }
 
 export default function ControlPanel() {
+  const [activeTab, setActiveTab] = useState('settings');
   const [isMorphing, setIsMorphing] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const { isAuthenticated, user } = useGlazeAuth();
   const {
     registryItem,
     settings,
+    setSetting,
     language,
     setLanguage,
     prompt,
+    setPrompt,
     displayCode,
     setDisplayCode,
     setCompilerLoading,
@@ -45,6 +60,15 @@ export default function ControlPanel() {
   const codePaneRef = useRef(null);
   const morphTimersRef = useRef([]);
   const copyTimerRef = useRef(null);
+
+  const { textSettings, physicsSettings } = useMemo(() => {
+    const settingsConfig = registryItem?.settingsConfig ?? [];
+
+    return {
+      textSettings: settingsConfig.filter((setting) => setting.type === 'text' || setting.type === 'select'),
+      physicsSettings: settingsConfig.filter((setting) => setting.type === 'slider'),
+    };
+  }, [registryItem]);
 
   const handleSaveComponent = async () => {
     if (!isAuthenticated || !user?.id) {
@@ -211,6 +235,10 @@ export default function ControlPanel() {
 
   // Trigger compile when language changes in Code tab
   useEffect(() => {
+    if (activeTab !== 'code') {
+      return undefined;
+    }
+
     if (!language || language === 'Select language') {
       return undefined;
     }
@@ -223,10 +251,93 @@ export default function ControlPanel() {
       window.clearTimeout(debounceTimer);
       morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
     };
-  }, [language, handleMorph]);
+  }, [language, activeTab, handleMorph]);
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-glass">
+      <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/50 p-1">
+        <button
+          type="button"
+          onClick={() => setActiveTab('settings')}
+          className={[
+            'flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition-colors',
+            activeTab === 'settings' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white',
+          ].join(' ')}
+        >
+          Settings
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('code')}
+          className={[
+            'flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition-colors',
+            activeTab === 'code' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white',
+          ].join(' ')}
+        >
+          Code
+        </button>
+      </div>
+
+      {activeTab === 'settings' ? (
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          <div className="space-y-4">
+            <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">Component State</div>
+            {textSettings.map((setting) => (
+              <ControlRow key={setting.id} label={setting.label} hint={setting.type}>
+                {setting.type === 'text' ? (
+                  <input
+                    value={settings[setting.id] ?? ''}
+                    onChange={(event) => setSetting(setting.id, event.target.value)}
+                    className="rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-white outline-none placeholder:text-zinc-600"
+                  />
+                ) : (
+                  <select
+                    value={settings[setting.id] ?? setting.default}
+                    onChange={(event) => setSetting(setting.id, event.target.value)}
+                    className="rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-white outline-none"
+                  >
+                    {(setting.options ?? []).map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </ControlRow>
+            ))}
+          </div>
+
+          <div className="space-y-4">
+            <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">Animation Physics</div>
+            {physicsSettings.map((setting) => (
+              <ControlRow key={setting.id} label={setting.label} hint="slider">
+                <input
+                  type="range"
+                  min={setting.min}
+                  max={setting.max}
+                  step={setting.step ?? 0.01}
+                  value={settings[setting.id] ?? setting.default}
+                  onChange={(event) => setSetting(setting.id, Number(event.target.value))}
+                  className="w-full accent-white"
+                />
+                <div className="text-xs uppercase tracking-[0.35em] text-cyan-300/80">
+                  {settings[setting.id] ?? setting.default}
+                </div>
+              </ControlRow>
+            ))}
+          </div>
+
+          <div className="col-span-1 lg:col-span-2 flex justify-end pt-2 border-t border-white/5">
+            <button
+              type="button"
+              onClick={handleSaveComponent}
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-zinc-300 transition-all hover:bg-cyan-400/10 hover:border-cyan-400/30 hover:text-cyan-300"
+            >
+              Save Custom Component
+            </button>
+          </div>
+        </div>
+      ) : (
       <div className="mt-1">
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/70 px-4 py-3">
@@ -305,6 +416,7 @@ export default function ControlPanel() {
           </div>
         </div>
       </div>
+      )}
     </section>
   );
 }
