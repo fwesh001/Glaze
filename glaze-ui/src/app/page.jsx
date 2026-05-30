@@ -18,7 +18,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main data-glaze-cursor-mode="landing" className="min-h-screen bg-black text-white">
       <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-between px-6 py-8 sm:px-10 lg:px-12">
         <div className="flex-1 flex items-center">
           <div className="w-full max-w-4xl">
@@ -33,6 +33,7 @@ export default function Home() {
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Link
                 href="/dashboard"
+                data-cursor-magnetic="true"
                 className="inline-flex items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm font-semibold uppercase tracking-[0.35em] text-white transition-colors hover:border-white hover:bg-white/5"
               >
                 Enter as Guest
@@ -41,6 +42,7 @@ export default function Home() {
               {isAuthenticated ? (
                 <Link
                   href="/profile"
+                  data-cursor-magnetic="true"
                   className="group relative inline-flex items-center gap-4 rounded-full border border-white/10 bg-zinc-950/80 p-2 pr-6 text-sm font-semibold uppercase tracking-[0.35em] text-white transition-all hover:border-cyan-400/50 hover:bg-zinc-900 hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]"
                 >
                   <img
@@ -57,6 +59,7 @@ export default function Home() {
                   type="button"
                   onClick={handleInitSession}
                   disabled={isRedirecting}
+                  data-cursor-magnetic="true"
                   className="inline-flex items-center justify-center rounded-full border border-white/10 bg-gradient-to-r from-white via-cyan-100 to-zinc-100 px-6 py-3 text-sm font-semibold uppercase tracking-[0.35em] text-black shadow-[0_0_35px_rgba(255,255,255,0.12)] transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none"
                 >
                   {isRedirecting ? 'Initializing...' : 'Initialize Session'}
