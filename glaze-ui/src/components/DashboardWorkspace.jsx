@@ -35,7 +35,7 @@ export default function DashboardWorkspace() {
   }, [activeCategory, query]);
 
   return (
-    <main data-glaze-root className="min-h-screen bg-black px-6 py-6 text-white">
+    <main data-glaze-root data-glaze-cursor-mode="browse" className="min-h-screen bg-black px-6 py-6 text-white">
       <section className="mx-auto flex max-w-7xl flex-col gap-6">
         <header className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/[0.03] px-6 py-5 shadow-glass backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -65,6 +65,7 @@ export default function DashboardWorkspace() {
                     key={tab.key}
                     type="button"
                     onClick={() => setActiveCategory(tab.key)}
+                    data-cursor-magnetic="true"
                     className={[
                       'rounded-full border px-4 py-2 text-xs font-semibold tracking-[0.35em] transition-all duration-200',
                       isActive
@@ -82,6 +83,7 @@ export default function DashboardWorkspace() {
               {isAuthenticated ? (
                 <Link
                   href="/profile"
+                  data-cursor-magnetic="true"
                   className="group relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black overflow-hidden hover:border-cyan-400 transition-all hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]"
                   title="Developer Profile"
                 >
@@ -95,6 +97,7 @@ export default function DashboardWorkspace() {
                 <button
                   type="button"
                   onClick={login}
+                  data-cursor-magnetic="true"
                   className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white px-4 py-2 text-[0.65rem] font-bold uppercase tracking-[0.3em] text-black hover:bg-cyan-200 transition-colors shrink-0"
                 >
                   Init Session
