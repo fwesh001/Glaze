@@ -147,6 +147,23 @@ export default function CustomCursor() {
     window.addEventListener('pointerdown', handlePointerDown);
     window.addEventListener('pointerup', handlePointerUp);
 
+    // listen for global toggle from context menu
+    const toggleCursorHandler = () => {
+      const body = document.body;
+      const visible = stateRef.current.visible;
+      if (visible) {
+        body.classList.remove('glaze-custom-cursor');
+        stateRef.current.visible = false;
+      } else {
+        body.classList.add('glaze-custom-cursor');
+        stateRef.current.visible = true;
+        stateRef.current.tx = stateRef.current.x;
+        stateRef.current.ty = stateRef.current.y;
+      }
+    };
+
+    window.addEventListener('glaze-toggle-cursor', toggleCursorHandler);
+
     stateRef.current.frame = requestAnimationFrame(animationFrame);
 
     return () => {
@@ -157,6 +174,7 @@ export default function CustomCursor() {
       window.removeEventListener('blur', handleBlur);
       window.removeEventListener('pointerdown', handlePointerDown);
       window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('glaze-toggle-cursor', toggleCursorHandler);
       cancelAnimationFrame(stateRef.current.frame);
     };
   }, []);
