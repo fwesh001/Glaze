@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import Link from 'next/link';
 import gsap from 'gsap';
-import { ChevronsLeftRight, Lock, LogIn, Menu, PanelLeft, Search, Sparkles } from 'lucide-react';
+import { Home, Lock, LogIn, Menu, PanelLeft, Search, Sparkles } from 'lucide-react';
 
 import { useGlazeAuth } from './auth/GlazeAuthProvider';
 import { componentRegistries, getRegistryEntriesByCategory } from '../registry/index.js';
@@ -82,9 +82,14 @@ export default function Sidebar({ registryItem }) {
     >
       <div className="flex items-center justify-between gap-3 border-b border-white/5 pb-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-white">
-            <ChevronsLeftRight size={16} />
-          </div>
+          <Link
+            href="/dashboard"
+            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-white transition-colors hover:border-cyan-400/30 hover:text-cyan-300"
+            aria-label="Go to dashboard"
+            title="Dashboard"
+          >
+            <Home size={16} />
+          </Link>
           {!collapsed ? (
             <div>
               <div className="text-xs uppercase tracking-[0.35em] text-zinc-500">Navigation</div>
