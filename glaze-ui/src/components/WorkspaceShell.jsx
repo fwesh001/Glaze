@@ -46,7 +46,7 @@ export default function WorkspaceShell({ registryItem }) {
 
   return (
     <WorkspaceProvider registryItem={registryItem}>
-      <main data-glaze-root className="min-h-screen bg-black px-4 py-4 text-white lg:px-5 lg:py-5">
+      <main data-glaze-root data-glaze-cursor-mode="build" className="min-h-screen bg-black px-4 py-4 text-white lg:px-5 lg:py-5">
         <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-[1600px] gap-5 lg:min-h-[calc(100vh-2.5rem)]">
           <Sidebar registryItem={registryItem} />
 
@@ -69,6 +69,7 @@ export default function WorkspaceShell({ registryItem }) {
                     {isAuthenticated ? (
                       <Link
                         href="/profile"
+                        data-cursor-magnetic="true"
                         className="group relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black overflow-hidden hover:border-cyan-400 transition-all hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]"
                         title="Developer Profile"
                       >
@@ -82,6 +83,7 @@ export default function WorkspaceShell({ registryItem }) {
                       <button
                         type="button"
                         onClick={login}
+                        data-cursor-magnetic="true"
                         className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white px-3 py-1.5 text-[0.6rem] font-bold uppercase tracking-[0.3em] text-black hover:bg-cyan-200 transition-colors shrink-0"
                       >
                         Init Session
