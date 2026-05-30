@@ -921,6 +921,51 @@ export default function ProfilePage() {
         </div>
       ) : null}
 
+      {logoutConfirmModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md">
+          <div className="w-full max-w-lg rounded-[2.5rem] border border-red-500/20 bg-gradient-to-br from-zinc-950 via-zinc-950 to-red-950/20 p-6 shadow-glass m-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-white/5 pb-4">
+              <h3 className="text-base font-black uppercase tracking-[0.35em] text-red-400 flex items-center gap-2">
+                <LogOut size={18} />
+                Confirm Logout
+              </h3>
+              <button
+                type="button"
+                onClick={() => setLogoutConfirmModal(false)}
+                className="h-8 w-8 inline-flex items-center justify-center rounded-xl border border-white/10 text-zinc-400 hover:text-white hover:bg-white/5"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="mt-6 space-y-4">
+              <p className="text-sm leading-6 text-zinc-300">
+                Are you sure you want to log out?
+              </p>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-xs leading-5 text-zinc-400">
+                You will need to sign in again to access your profile.
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3 border-t border-white/5 pt-4">
+              <button
+                type="button"
+                onClick={() => setLogoutConfirmModal(false)}
+                className="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-zinc-400 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmLogout}
+                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white hover:bg-red-500"
+              >
+                <LogOut size={12} />
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       {siteToast ? (
         <GlazeSiteToast
           message={siteToast.message}
