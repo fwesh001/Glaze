@@ -62,6 +62,7 @@ export default function ProfilePage() {
   const [deleting, setDeleting] = useState(false);
   const [siteModal, setSiteModal] = useState(null);
   const [siteToast, setSiteToast] = useState(null);
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState(null);
 
   const joinedDate = useMemo(() => {
     const value = user?.created_at;
@@ -351,16 +352,23 @@ export default function ProfilePage() {
 
   // Delete custom component
   const handleDeleteComponent = async (componentId) => {
-    if (!window.confirm('Are you sure you want to delete this custom component from your profile?')) return;
+    setDeleteConfirmModal({ componentId });
+  };
+
+  const handleConfirmDeleteComponent = async () => {
+    if (!deleteConfirmModal?.componentId) return;
     try {
       const { error } = await supabase
         .from('glaze_components')
         .delete()
-        .eq('id', componentId);
+        .eq('id', deleteConfirmModal.componentId);
       if (error) throw error;
-      setComponents(prev => prev.filter(c => c.id !== componentId));
+      setComponents(prev => prev.filter(c => c.id !== deleteConfirmModal.componentId));
+      setSiteToast({ message: 'Component deleted', icon: 'success' });
+      setDeleteConfirmModal(null);
     } catch (err) {
       console.error('[Profile] Delete failed:', err);
+      setSiteToast({ message: 'Failed to delete component', icon: 'error' });
     }
   };
 
@@ -855,6 +863,51 @@ export default function ProfilePage() {
           onConfirm={() => setSiteModal(null)}
           onClose={() => setSiteModal(null)}
         />
+      ) : null}
+
+      {deleteConfirmModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md">
+          <div className="w-full max-w-lg rounded-[2.5rem] border border-red-500/20 bg-gradient-to-br from-zinc-950 via-zinc-950 to-red-950/20 p-6 shadow-glass m-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-white/5 pb-4">
+              <h3 className="text-base font-black uppercase tracking-[0.35em] text-red-400 flex items-center gap-2">
+                <AlertTriangle size={18} />
+                Delete Component
+              </h3>
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmModal(null)}
+                className="h-8 w-8 inline-flex items-center justify-center rounded-xl border border-white/10 text-zinc-400 hover:text-white hover:bg-white/5"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div className="mt-6 space-y-4">
+              <p className="text-sm leading-6 text-zinc-300">
+                Are you sure you want to delete this custom component from your profile?
+              </p>
+              <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4 text-xs leading-5 text-red-300">
+                This action is permanent and cannot be undone.
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end gap-3 border-t border-white/5 pt-4">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmModal(null)}
+                className="rounded-xl border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-zinc-400 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDeleteComponent}
+                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-white hover:bg-red-500"
+              >
+                <Trash2 size={12} />
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       ) : null}
 
       {siteToast ? (
