@@ -2,16 +2,42 @@
 
 import { useEffect, useRef } from 'react';
 
+const MODE_CONFIG = {
+  default: { label: 'NAV', tone: 'rgba(255,255,255,0.92)', glow: 'rgba(52,211,255,0.22)' },
+  landing: { label: 'ENTER', tone: 'rgba(255,255,255,0.96)', glow: 'rgba(52,211,255,0.30)' },
+  browse: { label: 'BROWSE', tone: 'rgba(52,211,255,0.96)', glow: 'rgba(52,211,255,0.24)' },
+  build: { label: 'BUILD', tone: 'rgba(34,211,238,0.96)', glow: 'rgba(34,211,238,0.24)' },
+  profile: { label: 'MANAGE', tone: 'rgba(244,114,182,0.96)', glow: 'rgba(244,114,182,0.22)' },
+  compose: { label: 'CREATE', tone: 'rgba(167,139,250,0.96)', glow: 'rgba(167,139,250,0.22)' },
+};
+
+const INTERACTIVE_SELECTOR = 'a, button, input, textarea, select, [role="button"], [data-cursor="hover"], [data-cursor-magnetic="true"]';
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function lerp(start, end, amount) {
+  return start + (end - start) * amount;
+}
+
 export default function CustomCursor() {
-  const dotRef = useRef(null);
-  const ringRef = useRef(null);
+  const cursorRef = useRef(null);
+  const labelRef = useRef(null);
   const stateRef = useRef({
     visible: false,
     active: false,
+    magnetic: false,
     x: 0,
     y: 0,
+    tx: 0,
+    ty: 0,
     rx: 0,
     ry: 0,
+    mode: 'default',
+    label: MODE_CONFIG.default.label,
+    tone: MODE_CONFIG.default.tone,
+    glow: MODE_CONFIG.default.glow,
     frame: 0,
   });
 
@@ -44,11 +70,44 @@ export default function CustomCursor() {
         setVisible(true);
       }
 
-      const isInteractive = target instanceof Element
-        ? Boolean(target.closest('a, button, input, textarea, select, [role="button"], [data-cursor="hover"]'))
-        : false;
+      if (target instanceof Element) {
+        const modeTarget = target.closest('[data-glaze-cursor-mode]');
+        const mode = modeTarget?.getAttribute('data-glaze-cursor-mode') || 'default';
+        const config = MODE_CONFIG[mode] ?? MODE_CONFIG.default;
+        stateRef.current.mode = mode;
+        stateRef.current.label = config.label;
+        stateRef.current.tone = config.tone;
+        stateRef.current.glow = config.glow;
 
-      setActive(isInteractive);
+        const interactiveTarget = target.closest(INTERACTIVE_SELECTOR);
+        const magneticTarget = target.closest('[data-cursor-magnetic="true"]') || interactiveTarget;
+
+        stateRef.current.active = Boolean(interactiveTarget);
+        stateRef.current.magnetic = Boolean(magneticTarget);
+
+        if (magneticTarget) {
+          const rect = magneticTarget.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const distance = Math.hypot(clientX - centerX, clientY - centerY);
+          const influence = clamp(1 - distance / 220, 0, 1);
+
+          stateRef.current.tx = lerp(clientX, centerX, influence * 0.28);
+          stateRef.current.ty = lerp(clientY, centerY, influence * 0.28);
+        } else {
+          stateRef.current.tx = clientX;
+          stateRef.current.ty = clientY;
+        }
+      } else {
+        stateRef.current.mode = 'default';
+        stateRef.current.label = MODE_CONFIG.default.label;
+        stateRef.current.tone = MODE_CONFIG.default.tone;
+        stateRef.current.glow = MODE_CONFIG.default.glow;
+        stateRef.current.active = false;
+        stateRef.current.magnetic = false;
+        stateRef.current.tx = clientX;
+        stateRef.current.ty = clientY;
+      }
     };
 
     const handlePointerEnter = () => setVisible(true);
@@ -62,21 +121,24 @@ export default function CustomCursor() {
     const handlePointerDown = () => setActive(true);
     const handlePointerUp = () => setActive(false);
 
-    const handleAnimate = () => {
-      const { x, y, rx, ry } = stateRef.current;
-      stateRef.current.rx += (x - rx) * 0.18;
-      stateRef.current.ry += (y - ry) * 0.18;
-    };
-
     const animationFrame = () => {
-      handleAnimate();
-      if (dotRef.current && ringRef.current) {
-        const { x, y, rx, ry, active, visible } = stateRef.current;
-        dotRef.current.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) scale(${active ? '1.8' : '1'})`;
-        ringRef.current.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%) scale(${active ? '1.25' : '1'})`;
-        dotRef.current.style.opacity = visible ? '1' : '0';
-        ringRef.current.style.opacity = visible ? '1' : '0';
+      const state = stateRef.current;
+      state.rx = lerp(state.rx, state.tx, 0.18);
+      state.ry = lerp(state.ry, state.ty, 0.18);
+
+      if (cursorRef.current) {
+        const scale = state.active ? 1.1 : 1;
+        const magneticScale = state.magnetic ? 1.14 : 1;
+        cursorRef.current.style.opacity = state.visible ? '1' : '0';
+        cursorRef.current.style.transform = `translate3d(${state.rx}px, ${state.ry}px, 0) translate(-50%, -50%) scale(${scale * magneticScale})`;
+        cursorRef.current.style.setProperty('--glaze-cursor-tone', state.tone);
+        cursorRef.current.style.setProperty('--glaze-cursor-glow', state.glow);
       }
+
+      if (labelRef.current) {
+        labelRef.current.textContent = state.label;
+      }
+
       stateRef.current.frame = requestAnimationFrame(animationFrame);
     };
 
@@ -104,15 +166,42 @@ export default function CustomCursor() {
   return (
     <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[9998] hidden lg:block">
       <div
-        ref={ringRef}
-        className="absolute left-0 top-0 h-12 w-12 rounded-full border border-cyan-300/70 bg-cyan-300/10 shadow-[0_0_24px_rgba(52,211,255,0.2)] transition-[opacity,transform] duration-150 ease-out"
-        style={{ opacity: 0, transform: 'translate3d(-100px, -100px, 0) translate(-50%, -50%)' }}
-      />
-      <div
-        ref={dotRef}
-        className="absolute left-0 top-0 h-3 w-3 rounded-full bg-white shadow-[0_0_18px_rgba(255,255,255,0.55)] transition-[opacity,transform] duration-75 ease-out"
-        style={{ opacity: 0, transform: 'translate3d(-100px, -100px, 0) translate(-50%, -50%)' }}
-      />
+        ref={cursorRef}
+        className="absolute left-0 top-0 select-none"
+        style={{
+          opacity: 0,
+          transform: 'translate3d(-100px, -100px, 0) translate(-50%, -50%)',
+          willChange: 'transform, opacity',
+          '--glaze-cursor-tone': MODE_CONFIG.default.tone,
+          '--glaze-cursor-glow': MODE_CONFIG.default.glow,
+        }}
+      >
+        <div className="relative flex items-start gap-2">
+          <div className="relative h-24 w-24 drop-shadow-[0_0_24px_var(--glaze-cursor-glow)]">
+            <svg viewBox="0 0 120 140" className="h-full w-full overflow-visible">
+              <path
+                d="M60 4 L106 118 L68 96 L60 111 L51 96 L14 118 Z"
+                fill="var(--glaze-cursor-tone)"
+              />
+              <path
+                d="M60 4 L89 84 L63 73 L60 80 L56 73 L31 84 Z"
+                fill="rgba(12,12,18,0.35)"
+              />
+              <path
+                d="M60 12 L94 96 L64 76 L60 86 L55 76 L26 96 Z"
+                fill="rgba(255,255,255,0.14)"
+              />
+            </svg>
+          </div>
+
+          <div
+            ref={labelRef}
+            className="mt-2 rounded-full border border-white/10 bg-black/70 px-3 py-1 text-[10px] font-black uppercase tracking-[0.35em] text-cyan-100 shadow-[0_0_20px_rgba(0,0,0,0.35)] backdrop-blur-md"
+          >
+            NAV
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
