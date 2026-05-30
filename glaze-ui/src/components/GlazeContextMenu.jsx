@@ -17,20 +17,34 @@ export default function GlazeContextMenu() {
       setOpen(true)
     }
 
-    function onAny() {
+    function onPointerDown(event) {
+      // only close if the click is outside the menu
+      const el = menuRef.current
+      if (!el) return
+      if (!el.contains(event.target)) {
+        setOpen(false)
+      }
+    }
+
+    function onScroll() {
+      // close on any scroll (to avoid menu floating over page)
+      setOpen(false)
+    }
+
+    function onBlur() {
       setOpen(false)
     }
 
     window.addEventListener('contextmenu', onContext)
-    window.addEventListener('pointerdown', onAny)
-    window.addEventListener('scroll', onAny, true)
-    window.addEventListener('blur', onAny)
+    window.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('scroll', onScroll, true)
+    window.addEventListener('blur', onBlur)
 
     return () => {
       window.removeEventListener('contextmenu', onContext)
-      window.removeEventListener('pointerdown', onAny)
-      window.removeEventListener('scroll', onAny, true)
-      window.removeEventListener('blur', onAny)
+      window.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('scroll', onScroll, true)
+      window.removeEventListener('blur', onBlur)
     }
   }, [])
 
@@ -98,35 +112,35 @@ export default function GlazeContextMenu() {
     <div
       ref={menuRef}
       style={{ left: pos.x, top: pos.y }}
-      className="fixed rounded-lg p-2 w-56 bg-glaze-surface border border-glaze-border shadow-glass z-[100]"
+      className="fixed pointer-events-auto overflow-hidden rounded-2xl border border-glaze-border bg-[#0a0a0f]/95 p-2 shadow-glass backdrop-blur-2xl ring-1 ring-white/10 z-[1000]"
     >
       <ul className="flex flex-col gap-1">
-        <li className="flex items-center gap-3 px-3 py-2 hover:bg-glaze-highlight rounded cursor-pointer" onClick={handleCopy}>
+        <li className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-glaze-text transition-colors hover:bg-white/8 cursor-pointer pointer-events-auto" onClick={handleCopy}>
           <Copy className="w-4 h-4" />
           <span>Copy</span>
         </li>
-        <li className="flex items-center gap-3 px-3 py-2 hover:bg-glaze-highlight rounded cursor-pointer" onClick={handlePaste}>
+        <li className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-glaze-text transition-colors hover:bg-white/8 cursor-pointer pointer-events-auto" onClick={handlePaste}>
           <Clipboard className="w-4 h-4" />
           <span>Paste</span>
         </li>
-        <li className="flex items-center gap-3 px-3 py-2 hover:bg-glaze-highlight rounded cursor-pointer" onClick={handleRefresh}>
+        <li className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-glaze-text transition-colors hover:bg-white/8 cursor-pointer pointer-events-auto" onClick={handleRefresh}>
           <RefreshCw className="w-4 h-4" />
           <span>Refresh</span>
         </li>
-        <li className="border-t border-glaze-border my-1" />
-        <li className="flex items-center gap-3 px-3 py-2 hover:bg-glaze-highlight rounded cursor-pointer" onClick={handlePortfolio}>
+        <li className="my-1 border-t border-white/10" />
+        <li className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-glaze-text transition-colors hover:bg-white/8 cursor-pointer pointer-events-auto" onClick={handlePortfolio}>
           <Globe className="w-4 h-4" />
           <span>Portfolio</span>
         </li>
-        <li className="flex items-center gap-3 px-3 py-2 hover:bg-glaze-highlight rounded cursor-pointer" onClick={handleDashboard}>
+        <li className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-glaze-text transition-colors hover:bg-white/8 cursor-pointer pointer-events-auto" onClick={handleDashboard}>
           <Home className="w-4 h-4" />
           <span>Dashboard</span>
         </li>
-        <li className="flex items-center gap-3 px-3 py-2 hover:bg-glaze-highlight rounded cursor-pointer" onClick={handleShare}>
+        <li className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-glaze-text transition-colors hover:bg-white/8 cursor-pointer pointer-events-auto" onClick={handleShare}>
           <Share2 className="w-4 h-4" />
           <span>Share Page</span>
         </li>
-        <li className="flex items-center gap-3 px-3 py-2 hover:bg-glaze-highlight rounded cursor-pointer" onClick={handleToggleCursor}>
+        <li className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-glaze-text transition-colors hover:bg-white/8 cursor-pointer pointer-events-auto" onClick={handleToggleCursor}>
           <MousePointer2 className="w-4 h-4" />
           <span>Toggle Cursor</span>
         </li>
