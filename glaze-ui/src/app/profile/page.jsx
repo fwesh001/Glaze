@@ -454,7 +454,7 @@ export default function ProfilePage() {
   if (!isAuthenticated) return null;
 
   return (
-    <main data-glaze-root className="min-h-screen bg-black px-4 py-4 text-white lg:px-5 lg:py-5">
+    <main data-glaze-root data-glaze-cursor-mode="profile" className="min-h-screen bg-black px-4 py-4 text-white lg:px-5 lg:py-5">
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-[1600px] gap-5 lg:min-h-[calc(100vh-2.5rem)]">
         {/* Left collapsable GSAP navigation sidebar */}
         <Sidebar />
@@ -486,6 +486,7 @@ export default function ProfilePage() {
                     if (activeTab === 'suggestions') fetchLogs();
                     fetchProfile();
                   }}
+                  data-cursor-magnetic="true"
                   className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-zinc-300 transition-colors hover:border-cyan-400/30 hover:text-cyan-300"
                 >
                   <RefreshCw size={13} />
@@ -494,6 +495,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={handleLogout}
+                  data-cursor-magnetic="true"
                   className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-red-300 transition-colors hover:bg-red-500/15"
                 >
                   <LogOut size={13} />
