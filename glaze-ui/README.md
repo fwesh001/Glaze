@@ -243,5 +243,13 @@ npm run generate:registry
 
 ---
 
+## Author
 
-Built by [zabdiel](https://zabdiel.tech) for the next generation of frontend interfaces.
+**Name:** ANYAOGU .C. ZABDIEL
+
+- **GitHub:** [https://github.com/fwesh001](https://github.com/fwesh001)
+- **Email:** [zabdielfwesh001@gmail.com](mailto:zabdielfwesh001@gmail.com)
+- **LinkedIn:** [https://www.linkedin.com/in/zabdiel-anyaogu-9b1a4a1b7/](https://www.linkedin.com/in/zabdiel-anyaogu-9b1a4a1b7/)
+- **Website:** [https://www.zabdiel.tech/](https://www.zabdiel.tech/)
+
+Built for the next generation of physics-driven frontend interfaces.
