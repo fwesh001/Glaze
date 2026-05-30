@@ -10,8 +10,6 @@ export default function GlazeLoader() {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    dotsRef.current = [];
-
     const timeline = gsap.timeline({ repeat: -1 });
 
     // Staggered scale and opacity animation for the three dots

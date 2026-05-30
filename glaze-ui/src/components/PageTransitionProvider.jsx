@@ -11,30 +11,32 @@ export function PageTransitionProvider({ children }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Router events are not directly exposed in Next.js 13+ app router,
-    // so we use a custom approach with route changes via navigation
     const handleStart = () => setIsTransitioning(true);
-    const handleComplete = () => setIsTransitioning(false);
 
     // Listen for popstate (browser back/forward)
     window.addEventListener('popstate', handleStart);
 
-    // We'll set a small delay before hiding to ensure smooth transition
-    const originalPush = router.push;
-    const originalReplace = router.replace;
+    if (!router.__rawPush) {
+      router.__rawPush = router.push;
+    }
+    if (!router.__rawReplace) {
+      router.__rawReplace = router.replace;
+    }
 
     router.push = function (...args) {
       handleStart();
-      return originalPush.apply(this, args);
+      return router.__rawPush.apply(this, args);
     };
 
     router.replace = function (...args) {
       handleStart();
-      return originalReplace.apply(this, args);
+      return router.__rawReplace.apply(this, args);
     };
 
     return () => {
       window.removeEventListener('popstate', handleStart);
+      router.push = router.__rawPush;
+      router.replace = router.__rawReplace;
     };
   }, [router]);
 
