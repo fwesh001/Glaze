@@ -31,6 +31,7 @@ import Sidebar from '../../components/Sidebar';
 import GlazeSiteModal from '../../components/ui/GlazeSiteModal';
 import GlazeSiteToast from '../../components/ui/GlazeSiteToast';
 import supabase from '../../lib/supabase';
+import Footer from '../../components/Footer';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -1078,6 +1079,9 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+        <div className="mt-8 px-4 py-6 sm:px-10 lg:px-12 border-t border-white/10">
+          <Footer />
+        </div>
     </main>
   );
 }
