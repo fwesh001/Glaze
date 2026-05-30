@@ -4,12 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useGlazeAuth } from '../components/auth/GlazeAuthProvider';
-
-const footerLinks = [
-  { label: 'GitHub', href: 'https://github.com' },
-  { label: 'MIT License', href: 'https://opensource.org/license/mit' },
-  { label: 'Docs', href: 'https://nextjs.org/docs' },
-];
+import Footer from '../components/Footer';
 
 export default function Home() {
   const router = useRouter();
@@ -27,12 +22,12 @@ export default function Home() {
       <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-between px-6 py-8 sm:px-10 lg:px-12">
         <div className="flex-1 flex items-center">
           <div className="w-full max-w-4xl">
-            <p className="text-xs uppercase tracking-[0.55em] text-zinc-500">Liquid UI Laboratory</p>
+            <p className="text-xs uppercase tracking-[0.55em] text-zinc-500">UI Laboratory</p>
             <h1 className="mt-6 text-6xl font-black uppercase tracking-[0.55em] text-white sm:text-7xl lg:text-8xl">
               GLAZE
             </h1>
             <p className="mt-6 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
-              Premium glassmorphic component research with a registry-driven dashboard and physics-led motion.
+              A collection of cutting-edge React components and hooks designed to accelerate development and enhance user experiences. Built with the latest web technologies, Glaze empowers developers to create stunning interfaces with ease and efficiency.
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -71,13 +66,7 @@ export default function Home() {
           </div>
         </div>
 
-        <footer className="grid gap-4 border-t border-white/10 py-6 text-xs uppercase tracking-[0.35em] text-zinc-500 sm:grid-cols-3">
-          {footerLinks.map((item) => (
-            <a key={item.label} href={item.href} target="_blank" rel="noreferrer" className="transition-colors hover:text-white">
-              {item.label}
-            </a>
-          ))}
-        </footer>
+        <Footer />
       </section>
 
       {isRedirecting ? (
