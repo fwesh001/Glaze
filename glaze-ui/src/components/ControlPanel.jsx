@@ -12,18 +12,6 @@ import { BASE_TOAST_SNIPPET, TARGET_LANGUAGE_MAP, buildMorphCode, requestMorphCo
 import { useGlazeAuth } from './auth/GlazeAuthProvider.jsx';
 import { supabase } from '../lib/supabase.js';
 
-function ControlRow({ label, children, hint }) {
-  return (
-    <label className="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-300">
-      <div className="flex items-center justify-between gap-4">
-        <span className="font-medium text-white">{label}</span>
-        {hint ? <span className="text-xs uppercase tracking-[0.3em] text-zinc-500">{hint}</span> : null}
-      </div>
-      {children}
-    </label>
-  );
-}
-
 function scrambleCode(source) {
   const glyphs = '░▒▓█<>/={}[]()_+-*#@$';
 
@@ -40,18 +28,15 @@ function scrambleCode(source) {
 }
 
 export default function ControlPanel() {
-  const [activeTab, setActiveTab] = useState('settings');
   const [isMorphing, setIsMorphing] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const { isAuthenticated, user } = useGlazeAuth();
   const {
     registryItem,
     settings,
-    setSetting,
     language,
     setLanguage,
     prompt,
-    setPrompt,
     displayCode,
     setDisplayCode,
     setCompilerLoading,
@@ -115,15 +100,6 @@ export default function ControlPanel() {
       showCompilerToast('Failed to copy code.', 'error');
     }
   };
-
-  const { textSettings, physicsSettings } = useMemo(() => {
-    const settingsConfig = registryItem?.settingsConfig ?? [];
-
-    return {
-      textSettings: settingsConfig.filter((setting) => setting.type === 'text' || setting.type === 'select'),
-      physicsSettings: settingsConfig.filter((setting) => setting.type === 'slider'),
-    };
-  }, [registryItem]);
 
   const serializedPayload = useMemo(
     () =>
@@ -235,10 +211,6 @@ export default function ControlPanel() {
 
   // Trigger compile when language changes in Code tab
   useEffect(() => {
-    if (activeTab !== 'code') {
-      return undefined;
-    }
-
     if (!language || language === 'Select language') {
       return undefined;
     }
@@ -251,95 +223,13 @@ export default function ControlPanel() {
       window.clearTimeout(debounceTimer);
       morphTimersRef.current.forEach((timer) => window.clearTimeout(timer));
     };
-  }, [language, activeTab, handleMorph]);
+  }, [language, handleMorph]);
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5 shadow-glass">
-      <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/50 p-1">
-        <button
-          type="button"
-          onClick={() => setActiveTab('settings')}
-          className={[
-            'flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition-colors',
-            activeTab === 'settings' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white',
-          ].join(' ')}
-        >
-          Settings
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('code')}
-          className={[
-            'flex-1 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition-colors',
-            activeTab === 'code' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white',
-          ].join(' ')}
-        >
-          Code
-        </button>
-      </div>
-
-      {activeTab === 'settings' ? (
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          <div className="space-y-4">
-            <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">Component State</div>
-            {textSettings.map((setting) => (
-              <ControlRow key={setting.id} label={setting.label} hint={setting.type}>
-                {setting.type === 'text' ? (
-                  <input
-                    value={settings[setting.id] ?? ''}
-                    onChange={(event) => setSetting(setting.id, event.target.value)}
-                    className="rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-white outline-none placeholder:text-zinc-600"
-                  />
-                ) : (
-                  <select
-                    value={settings[setting.id] ?? setting.default}
-                    onChange={(event) => setSetting(setting.id, event.target.value)}
-                    className="rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-white outline-none"
-                  >
-                    {(setting.options ?? []).map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </ControlRow>
-            ))}
-          </div>
-
-          <div className="space-y-4">
-            <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">Animation Physics</div>
-            {physicsSettings.map((setting) => (
-              <ControlRow key={setting.id} label={setting.label} hint="slider">
-                <input
-                  type="range"
-                  min={setting.min}
-                  max={setting.max}
-                  step={setting.step ?? 0.01}
-                  value={settings[setting.id] ?? setting.default}
-                  onChange={(event) => setSetting(setting.id, Number(event.target.value))}
-                  className="w-full accent-white"
-                />
-                <div className="text-xs uppercase tracking-[0.35em] text-cyan-300/80">
-                  {settings[setting.id] ?? setting.default}
-                </div>
-              </ControlRow>
-            ))}
-          </div>
-
-          <div className="col-span-1 lg:col-span-2 flex justify-end pt-2 border-t border-white/5">
-            <button
-              type="button"
-              onClick={handleSaveComponent}
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-3 text-xs font-semibold uppercase tracking-[0.28em] text-zinc-300 transition-all hover:bg-cyan-400/10 hover:border-cyan-400/30 hover:text-cyan-300"
-            >
-              Save Custom Component
-            </button>
-          </div>
-        </div>
-        <div className="mt-5">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/70 px-4 py-3">
+      <div className="mt-1">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-black/70 px-4 py-3">
               <div>
                 <div className="text-xs uppercase tracking-[0.4em] text-zinc-500">Code Matrix</div>
                 <div className="mt-1 text-sm text-zinc-300">{registryItem?.name ?? 'Component Blueprint'}</div>
@@ -358,64 +248,63 @@ export default function ControlPanel() {
                   <option>Vanilla JS</option>
                 </select>
               </label>
+          </div>
+
+          <div
+            ref={codePaneRef}
+            className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#07070a] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_24px_80px_rgba(0,0,0,0.45)]"
+          >
+            <div className="flex items-center justify-between border-b border-white/5 px-4 py-3 text-[0.65rem] uppercase tracking-[0.4em] text-zinc-500">
+              <span>Syntax Visualizer</span>
+              <div className="flex items-center gap-3">
+                <span className={isMorphing ? 'text-cyan-300/80' : 'text-zinc-500'}>{isMorphing ? 'Recompiling' : 'Stable'}</span>
+                <button
+                  type="button"
+                  onClick={handleCopyCode}
+                  title="Copy code to clipboard"
+                  className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.35em] transition-all ${
+                    copyFeedback
+                      ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300'
+                      : 'border-white/10 bg-white/[0.05] text-zinc-500 hover:border-white/20 hover:bg-white/[0.08] hover:text-white'
+                  }`}
+                >
+                  <Copy size={14} />
+                  <span>Copy</span>
+                </button>
+              </div>
             </div>
 
-            <div
-              ref={codePaneRef}
-              className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#07070a] shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_24px_80px_rgba(0,0,0,0.45)]"
-            >
-              <div className="flex items-center justify-between border-b border-white/5 px-4 py-3 text-[0.65rem] uppercase tracking-[0.4em] text-zinc-500">
-                <span>Syntax Visualizer</span>
-                <div className="flex items-center gap-3">
-                  <span className={isMorphing ? 'text-cyan-300/80' : 'text-zinc-500'}>{isMorphing ? 'Recompiling' : 'Stable'}</span>
-                  <button
-                    type="button"
-                    onClick={handleCopyCode}
-                    title="Copy code to clipboard"
-                    className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[0.6rem] uppercase tracking-[0.35em] transition-all ${
-                      copyFeedback
-                        ? 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300'
-                        : 'border-white/10 bg-white/[0.05] text-zinc-500 hover:border-white/20 hover:bg-white/[0.08] hover:text-white'
-                    }`}
-                  >
-                    <Copy size={14} />
-                    <span>Copy</span>
-                  </button>
-                </div>
-              </div>
-
-              {isMorphing && (
-                <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-                  <div className="rounded-full border border-white/10 bg-gradient-to-br from-zinc-900/80 to-black/90 px-6 py-4 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
-                    <div className="flex items-center justify-center gap-2">
-                      {[0, 1, 2].map((i) => (
-                        <div key={i} className="h-2.5 w-2.5 rounded-full bg-cyan-400/80 shadow-[0_0_12px_rgba(34,211,238,0.5)] animate-pulse" />
-                      ))}
-                    </div>
+            {isMorphing && (
+              <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+                <div className="rounded-full border border-white/10 bg-gradient-to-br from-zinc-900/80 to-black/90 px-6 py-4 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+                  <div className="flex items-center justify-center gap-2">
+                    {[0, 1, 2].map((i) => (
+                      <div key={i} className="h-2.5 w-2.5 rounded-full bg-cyan-400/80 shadow-[0_0_12px_rgba(34,211,238,0.5)] animate-pulse" />
+                    ))}
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              <SyntaxHighlighter
-                language={syntaxLanguage}
-                style={vscDarkPlus}
-                customStyle={{
-                  margin: 0,
-                  padding: '1.25rem',
-                  background: '#07070a',
-                  fontSize: '0.78rem',
-                  lineHeight: '1.7',
-                  minHeight: '22rem',
-                }}
-                codeTagProps={{ style: { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace' } }}
-                wrapLongLines
-              >
-                {displayCode}
-              </SyntaxHighlighter>
-            </div>
+            <SyntaxHighlighter
+              language={syntaxLanguage}
+              style={vscDarkPlus}
+              customStyle={{
+                margin: 0,
+                padding: '1.25rem',
+                background: '#07070a',
+                fontSize: '0.78rem',
+                lineHeight: '1.7',
+                minHeight: '22rem',
+              }}
+              codeTagProps={{ style: { fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace' } }}
+              wrapLongLines
+            >
+              {displayCode}
+            </SyntaxHighlighter>
           </div>
         </div>
-      )}
+      </div>
     </section>
   );
 }
