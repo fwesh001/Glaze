@@ -63,6 +63,7 @@ export default function ProfilePage() {
   const [siteModal, setSiteModal] = useState(null);
   const [siteToast, setSiteToast] = useState(null);
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(null);
+  const [logoutConfirmModal, setLogoutConfirmModal] = useState(false);
 
   const joinedDate = useMemo(() => {
     const value = user?.created_at;
@@ -372,6 +373,16 @@ export default function ProfilePage() {
     }
   };
 
+  // Logout handlers
+  const handleLogout = () => {
+    setLogoutConfirmModal(true);
+  };
+
+  const handleConfirmLogout = async () => {
+    setLogoutConfirmModal(false);
+    await logout();
+  };
+
   // Account Anonymize (Option B Scrubber Execution)
   const handleAnonymizeAccount = async () => {
     if (confirmUsername !== profile?.username) return;
@@ -481,7 +492,7 @@ export default function ProfilePage() {
                 </button>
                 <button
                   type="button"
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-red-300 transition-colors hover:bg-red-500/15"
                 >
                   <LogOut size={13} />
